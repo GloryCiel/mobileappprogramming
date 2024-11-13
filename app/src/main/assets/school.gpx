@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gpx version="1.0" creator="QGIS">
+<rte>
+<name>school tracking test</name>
+<url>QGIS에서 디지타이즈 됨</url>
+<number>0</number>
+<rtept lat="35.887899333371" lon="128.610078894574">
+</rtept>
+<rtept lat="35.887835372688" lon="128.612145465353">
+</rtept>
+</rte>
+<trk>
+<name>school_track_test</name>
+<url>QGIS에서 디지타이즈 됨</url>
+<number>0</number>
+<trkseg>
+<trkpt lat="35.887888046196" lon="128.610069606615">
+</trkpt>
+<trkpt lat="35.887820323108" lon="128.612168685250">
+</trkpt>
+</trkseg>
+</trk>
+</gpx>
