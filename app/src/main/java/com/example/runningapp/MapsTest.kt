@@ -8,6 +8,44 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.naver.maps.map.*
 import com.naver.maps.map.util.FusedLocationSource
+import android.content.Context
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
+import java.io.InputStream
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.overlay.PathOverlay
+import android.widget.Button
+
+fun displayGpxRoute(naverMap: NaverMap, points: List<GpxPoint>) {//네이버 지도에 경로 표시
+    val path = PathOverlay()
+    path.coords = points.map { LatLng(it.lat, it.lon) }
+    path.map = naverMap
+}
+
+data class GpxPoint(val lat: Double, val lon: Double)//위도와 경도를 저장하는 데이터 클래스
+
+fun loadGpxFile(context: Context, fileName: String): List<GpxPoint> {//assets 폴더에 있는 gpx 파일을 읽어와서 GpxPoint 리스트로 반환
+    val points = mutableListOf<GpxPoint>()
+    try {
+        val inputStream: InputStream = context.assets.open(fileName)
+        val factory = XmlPullParserFactory.newInstance()
+        val parser = factory.newPullParser()
+        parser.setInput(inputStream, null)
+        var eventType = parser.eventType
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            if (eventType == XmlPullParser.START_TAG && parser.name == "rtept") {
+                val lat = parser.getAttributeValue(null, "lat").toDouble()
+                val lon = parser.getAttributeValue(null, "lon").toDouble()
+                points.add(GpxPoint(lat, lon))
+            }
+            eventType = parser.next()
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return points
+}
 
 class MapsTest : AppCompatActivity(), OnMapReadyCallback {
 
@@ -18,12 +56,10 @@ class MapsTest : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps_for_test)
 
-        supportActionBar?.hide()//앱바 숨기기
+        supportActionBar?.hide()
 
-        // NaverMapSdk 초기화
         NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient(BuildConfig.NAVER_MAPS_CLIENT_ID)
 
-        // MapFragment 설정
         val fm = supportFragmentManager
         var mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
         if (mapFragment == null) {
@@ -32,32 +68,33 @@ class MapsTest : AppCompatActivity(), OnMapReadyCallback {
         }
         mapFragment?.getMapAsync(this)
 
-        // 위치 소스 초기화
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+
+        val loadGpxButton: Button = findViewById(R.id.load_gpx_button)
+        loadGpxButton.setOnClickListener {
+            val points = loadGpxFile(this, "test.gpx")
+            displayGpxRoute(naverMap, points)
+        }
     }
 
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
 
-        // 위치 소스 설정
         naverMap.locationSource = locationSource
 
-        // 위치 권한 요청
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
         } else {
             naverMap.locationTrackingMode = LocationTrackingMode.Follow
         }
 
-        // 현재 위치를 나타내는 LocationOverlay 설정
         val locationOverlay = naverMap.locationOverlay
         locationOverlay.isVisible = true
-        locationOverlay.circleColor = ContextCompat.getColor(this, R.color.blue) // 원하는 색상으로 변경
-        locationOverlay.circleOutlineColor = ContextCompat.getColor(this, R.color.outline_blue) // 원하는 외곽선 색상으로 변경
-        locationOverlay.circleOutlineWidth = 5 // 외곽선 두께 설정
-        locationOverlay.circleRadius = 20 // 원의 반지름 설정
+        locationOverlay.circleColor = ContextCompat.getColor(this, R.color.blue)
+        locationOverlay.circleOutlineColor = ContextCompat.getColor(this, R.color.outline_blue)
+        locationOverlay.circleOutlineWidth = 5
+        locationOverlay.circleRadius = 20
 
-        // 현위치 버튼 활성화
         val uiSettings = naverMap.uiSettings
         uiSettings.isLocationButtonEnabled = true
     }
