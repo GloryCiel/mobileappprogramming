@@ -18,6 +18,8 @@ class MapsTest : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps_for_test)
 
+        supportActionBar?.hide()//앱바 숨기기
+
         // NaverMapSdk 초기화
         NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient(BuildConfig.NAVER_MAPS_CLIENT_ID)
 
