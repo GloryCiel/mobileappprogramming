@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.mapOpen.setOnClickListener {
-            val intent = Intent(this, maps_for_test::class.java)
+            val intent = Intent(this, MapsTest::class.java)
             startActivity(intent)
         }
     }

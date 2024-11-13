@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import com.naver.maps.map.*
 import com.naver.maps.map.util.FusedLocationSource
 
-class maps_for_test : AppCompatActivity(), OnMapReadyCallback {
+class MapsTest : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
