@@ -1,17 +1,19 @@
 package com.example.runningapp
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.example.runningapp.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity()
-{
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        binding.mapOpen.setOnClickListener {
+            val intent = Intent(this, maps_for_test::class.java)
+            startActivity(intent)
+        }
     }
 }
