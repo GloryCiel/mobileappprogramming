@@ -25,7 +25,7 @@ fun displayGpxRoute(naverMap: NaverMap, points: List<GpxPoint>) {//네이버 지
 
 data class GpxPoint(val lat: Double, val lon: Double)//위도와 경도를 저장하는 데이터 클래스
 
-fun loadGpxFile(context: Context, fileName: String): List<GpxPoint> {//assets 폴더에 있는 gpx 파일을 읽어와서 GpxPoint 리스트로 반환
+fun loadGpxFile(context: Context, fileName: String): List<GpxPoint> {
     val points = mutableListOf<GpxPoint>()
     try {
         val inputStream: InputStream = context.assets.open(fileName)
@@ -34,7 +34,7 @@ fun loadGpxFile(context: Context, fileName: String): List<GpxPoint> {//assets �
         parser.setInput(inputStream, null)
         var eventType = parser.eventType
         while (eventType != XmlPullParser.END_DOCUMENT) {
-            if (eventType == XmlPullParser.START_TAG && parser.name == "rtept") {
+            if (eventType == XmlPullParser.START_TAG && (parser.name == "rtept" || parser.name == "trkpt")) {
                 val lat = parser.getAttributeValue(null, "lat").toDouble()
                 val lon = parser.getAttributeValue(null, "lon").toDouble()
                 points.add(GpxPoint(lat, lon))
@@ -72,7 +72,7 @@ class MapsTest : AppCompatActivity(), OnMapReadyCallback {
 
         val loadGpxButton: Button = findViewById(R.id.load_gpx_button)
         loadGpxButton.setOnClickListener {
-            val points = loadGpxFile(this, "test.gpx")
+            val points = loadGpxFile(this, "pretty_university_cross.gpx")
             displayGpxRoute(naverMap, points)
         }
     }
