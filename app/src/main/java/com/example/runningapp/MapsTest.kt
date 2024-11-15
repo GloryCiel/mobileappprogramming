@@ -51,6 +51,7 @@ class MapsTest : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
+    private var path: PathOverlay? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +59,8 @@ class MapsTest : AppCompatActivity(), OnMapReadyCallback {
 
         supportActionBar?.hide()
 
-        NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient(BuildConfig.NAVER_MAPS_CLIENT_ID)
+        NaverMapSdk.getInstance(this).client =
+            NaverMapSdk.NaverCloudPlatformClient(BuildConfig.NAVER_MAPS_CLIENT_ID)
 
         val fm = supportFragmentManager
         var mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
@@ -75,6 +77,11 @@ class MapsTest : AppCompatActivity(), OnMapReadyCallback {
             val points = loadGpxFile(this, "pretty_university_cross.gpx")
             displayGpxRoute(naverMap, points)
         }
+
+        val clearGpxButton: Button = findViewById(R.id.clear_gpx_button)
+        clearGpxButton.setOnClickListener {
+            clearGpxRoute()
+        }
     }
 
     override fun onMapReady(naverMap: NaverMap) {
@@ -82,8 +89,16 @@ class MapsTest : AppCompatActivity(), OnMapReadyCallback {
 
         naverMap.locationSource = locationSource
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
         } else {
             naverMap.locationTrackingMode = LocationTrackingMode.Follow
         }
@@ -99,7 +114,23 @@ class MapsTest : AppCompatActivity(), OnMapReadyCallback {
         uiSettings.isLocationButtonEnabled = true
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    private fun displayGpxRoute(naverMap: NaverMap, points: List<GpxPoint>) {
+        path?.map = null // 기존 경로 지우기
+        path = PathOverlay().apply {
+            coords = points.map { LatLng(it.lat, it.lon) }
+            map = naverMap
+        }
+    }
+
+    private fun clearGpxRoute() {
+        path?.map = null
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
