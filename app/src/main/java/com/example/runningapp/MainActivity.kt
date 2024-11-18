@@ -1,145 +1,101 @@
 package com.example.runningapp
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.Menu
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.naver.maps.map.*
-import com.naver.maps.map.util.FusedLocationSource
-import android.content.Context
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
-import java.io.InputStream
-import com.naver.maps.geometry.LatLng
+import androidx.drawerlayout.widget.DrawerLayout
+import com.example.runningapp.databinding.ActivityMainBinding
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
-import com.naver.maps.map.overlay.PathOverlay
-import android.widget.Button
-
-fun displayGpxRoute(naverMap: NaverMap, points: List<GpxPoint>) {
-    val path = PathOverlay()
-    path.coords = points.map { LatLng(it.lat, it.lon) }
-    path.map = naverMap
-}
-
-data class GpxPoint(val lat: Double, val lon: Double)
-
-fun loadGpxFile(context: Context, fileName: String): List<GpxPoint> {
-    val points = mutableListOf<GpxPoint>()
-    try {
-        val inputStream: InputStream = context.assets.open(fileName)
-        val factory = XmlPullParserFactory.newInstance()
-        val parser = factory.newPullParser()
-        parser.setInput(inputStream, null)
-        var eventType = parser.eventType
-        while (eventType != XmlPullParser.END_DOCUMENT) {
-            if (eventType == XmlPullParser.START_TAG && (parser.name == "rtept" || parser.name == "trkpt")) {
-                val lat = parser.getAttributeValue(null, "lat").toDouble()
-                val lon = parser.getAttributeValue(null, "lon").toDouble()
-                points.add(GpxPoint(lat, lon))
-            }
-            eventType = parser.next()
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-    return points
-}
+import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.NaverMapSdk
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var locationSource: FusedLocationSource
+    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var mapView: MapView
     private lateinit var naverMap: NaverMap
-    private var path: PathOverlay? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_maps_for_test)
 
-        supportActionBar?.hide()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        NaverMapSdk.getInstance(this).client =
-            NaverMapSdk.NaverCloudPlatformClient(BuildConfig.NAVER_MAPS_CLIENT_ID)
+        // API 키 설정 - 로컬 프로퍼티에서 가져오기
+        NaverMapSdk.getInstance(this).setClient(
+            NaverMapSdk.NaverCloudPlatformClient(BuildConfig.NAVER_MAPS_CLIENT_ID) // 로컬 프로퍼티에서 API 키 읽기
+        )
 
-        val fm = supportFragmentManager
-        var mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
-        if (mapFragment == null) {
-            mapFragment = MapFragment.newInstance()
-            fm.beginTransaction().add(R.id.map_fragment, mapFragment).commit()
+        // MapView 초기화
+        mapView = MapView(this)
+        val mapContainer: FrameLayout = findViewById(R.id.map_container)
+        mapContainer.addView(mapView) // FrameLayout에 MapView 추가
+
+        mapView.onCreate(savedInstanceState)
+        mapView.getMapAsync(this)
+
+        setSupportActionBar(binding.appBarMain.toolbar)
+
+        binding.appBarMain.fab.setOnClickListener { view ->
+            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null)
+                .setAnchorView(R.id.fab).show()
         }
-        mapFragment?.getMapAsync(this)
 
-        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-
-        val loadGpxButton: Button = findViewById(R.id.load_gpx_button)
-        loadGpxButton.setOnClickListener {
-            val points = loadGpxFile(this, "pretty_university_cross.gpx")
-            displayGpxRoute(naverMap, points)
-        }
-
-        val clearGpxButton: Button = findViewById(R.id.clear_gpx_button)
-        clearGpxButton.setOnClickListener {
-            clearGpxRoute()
-        }
+        val drawerLayout: DrawerLayout = binding.drawerLayout
+        val navView: NavigationView = binding.navView
+        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
+            ), drawerLayout
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
     }
 
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
-
-        naverMap.locationSource = locationSource
-
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-        } else {
-            naverMap.locationTrackingMode = LocationTrackingMode.Follow
-        }
-
-        val locationOverlay = naverMap.locationOverlay
-        locationOverlay.isVisible = true
-        locationOverlay.circleColor = ContextCompat.getColor(this, R.color.blue)
-        locationOverlay.circleOutlineColor = ContextCompat.getColor(this, R.color.outline_blue)
-        locationOverlay.circleOutlineWidth = 5
-        locationOverlay.circleRadius = 20
-
-        val uiSettings = naverMap.uiSettings
-        uiSettings.isLocationButtonEnabled = true
+        // 카메라 설정 코드 제거
     }
 
-    private fun displayGpxRoute(naverMap: NaverMap, points: List<GpxPoint>) {
-        path?.map = null
-        path = PathOverlay().apply {
-            coords = points.map { LatLng(it.lat, it.lon) }
-            map = naverMap
-        }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
     }
 
-    private fun clearGpxRoute() {
-        path?.map = null
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                naverMap.locationTrackingMode = LocationTrackingMode.Follow
-            }
-        }
+    override fun onResume() {
+        super.onResume()
+        mapView.onResume()
     }
 
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+    override fun onPause() {
+        super.onPause()
+        mapView.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView.onDestroy()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mapView.onSaveInstanceState(outState)
     }
 }
