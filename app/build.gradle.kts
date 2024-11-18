@@ -1,8 +1,8 @@
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.application") version "8.6.1"
+    id("org.jetbrains.kotlin.android") version "1.9.10"
 }
 
 android {
@@ -59,6 +59,8 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.3.6")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.naver.maps:map-sdk:3.19.1")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.3")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.3")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
