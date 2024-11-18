@@ -9,8 +9,12 @@ appcompat = "1.7.0"
 material = "1.12.0"
 activity = "1.9.3"
 constraintlayout = "2.2.0"
+androidx_databinding = "7.0.0"
+map_sdk = "3.19.1"
 
 [libraries]
+map_sdk = { group = "com.example", name = "map-sdk", version.ref = "map_sdk" }
+androidx_databinding_runtime = { group = "androidx.databinding", name = "databinding-runtime", version.ref = "androidx_databinding" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
