@@ -1,14 +1,14 @@
-package com.example.runningapp.ui.slideshow
+package com.example.runningapp.ui.myPage
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class SlideshowViewModel : ViewModel()
-{
+class MyPageViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is slideshow Fragment"
+        value = "This is my page Fragment"
     }
     val text: LiveData<String> = _text
+
 }
