@@ -1,19 +1,28 @@
 package com.example.runningapp.ui.home
 
+import android.app.AlertDialog
+import android.location.Location
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.runningapp.BuildConfig
+import com.example.runningapp.R
 import com.example.runningapp.databinding.FragmentHomeBinding
-// naver api import
+import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.widget.LocationButtonView
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -22,8 +31,28 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var mapView: MapView
     private lateinit var naverMap: NaverMap
+    private lateinit var locationSource: FusedLocationSource
 
     private var isRunning = false // 러닝 상태 여부 for runButton
+    private var startTime: Long = 0
+    private var totalDistance: Float = 0f
+    private var lastLocation: Location? = null
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateRunnable = object : Runnable {
+        override fun run() {
+            if (isRunning) {
+                val elapsedTime = System.currentTimeMillis() - startTime
+                val elapsedTimeInSeconds = elapsedTime / 1000
+                val elapsedTimeInMinutes = elapsedTimeInSeconds / 60
+                val elapsedTimeInHours = elapsedTimeInMinutes / 60
+                val formattedTime = String.format("%02d:%02d:%02d", elapsedTimeInHours, elapsedTimeInMinutes % 60, elapsedTimeInSeconds % 60)
+
+                binding.runInfo.text = "걸린 시간: $formattedTime, 거리: ${totalDistance}m"
+                handler.postDelayed(this, 1000)
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,6 +65,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
 
         // Naver Map SDK 초기화 (클라이언트 ID 설정)
         NaverMapSdk.getInstance(requireContext()).client =
@@ -47,36 +77,80 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
 
+        // FusedLocationSource 초기화
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+
         // 버튼 클릭 리스너 설정
         binding.runButton.setOnClickListener {
-            // runButton 내용을 "러닝 시작!" -> "러닝 중!"로 변경
-            // 다시 이 버튼이 눌리면 Dialog 띄우기
-            // Dialog에서 종료 선택 시, 초기화면으로 돌아감
-            Toast.makeText(requireContext(), "Run Button Clicked", Toast.LENGTH_SHORT).show()
+            if (isRunning) {
+                // 다이얼로그 표시
+                AlertDialog.Builder(requireContext())
+                    .setTitle("러닝 중지")
+                    .setMessage("러닝을 중지하시겠습니까?")
+                    .setPositiveButton("예") { _, _ ->
+                        binding.runButton.text = "러닝 시작"
+                        isRunning = false
+                        binding.runInfo.isEnabled = false
+                        handler.removeCallbacks(updateRunnable)
+                        Toast.makeText(requireContext(), "러닝이 중지되었습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                    .setNegativeButton("아니오", null)
+                    .show()
+            } else {
+                binding.runButton.text = "러닝 중"
+                isRunning = true
+                startTime = System.currentTimeMillis()
+                totalDistance = 0f
+                lastLocation = null
+                binding.runInfo.isEnabled = true
+                handler.post(updateRunnable)
+                Toast.makeText(requireContext(), "러닝이 시작되었습니다.", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.moreInfo.setOnClickListener {
-            // moreInfo 클릭 시, BottomSheet를 올려줌
-            // 해당 Sheet 내에 추가정보와 토글된 아이콘들이 존재
-            // 아이콘 선택 시, Naver Map에 해당 정보를 마커(혹은 다른 방식)로 띄워줌
             Toast.makeText(requireContext(), "More Info Clicked", Toast.LENGTH_SHORT).show()
         }
 
-        binding.runInfo.setOnClickListener {
-            // runInfo 클릭 시, BottomSheet를 올려줌
-            // 해당 Sheet 내에 러닝 상태에 대한 상세 정보를 더 보여주고 끝
-            Toast.makeText(requireContext(), "Run Info Clicked", Toast.LENGTH_SHORT).show()
-        }
+        binding.runInfo.isEnabled = false
     }
 
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
-        // 추가로 Naver Map 설정 가능
-    }
+        naverMap.locationSource = locationSource
+        naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
-    // Fragment 생명주기에 따라 MapView 상태를 업데이트
+        // 내 위치 표시 원의 크기 조정
+        val locationOverlay = naverMap.locationOverlay
+        locationOverlay.isVisible = true
+        locationOverlay.circleColor = ContextCompat.getColor(requireContext(), R.color.blue)
+        locationOverlay.circleOutlineColor = ContextCompat.getColor(requireContext(), R.color.outline_blue)
+        locationOverlay.circleOutlineWidth = 5
+        locationOverlay.circleRadius = 20
+
+        // LocationButton 설정
+        val locationButton = binding.root.findViewById<Button>(R.id.location_button)
+        locationButton.setOnClickListener {
+            naverMap.locationTrackingMode = LocationTrackingMode.Follow
+        }
+
+        naverMap.addOnLocationChangeListener { location ->
+            if (isRunning) {
+                if (lastLocation != null) {
+                    val distance = lastLocation!!.distanceTo(location).toInt()
+                    if (distance > location.accuracy) {
+                        totalDistance += distance
+                        lastLocation = location
+                    }
+                } else {
+                    lastLocation = location
+                }
+            }
+        }
+    }
     override fun onResume() {
         super.onResume()
+        (activity as AppCompatActivity).supportActionBar?.hide()
         mapView.onResume()
     }
 
@@ -94,5 +168,9 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mapView.onSaveInstanceState(outState)
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 }
