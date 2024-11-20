@@ -1,6 +1,7 @@
 package com.example.runningapp.ui.home
 
 import android.app.AlertDialog
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.os.Handler
@@ -16,13 +17,19 @@ import androidx.fragment.app.Fragment
 import com.example.runningapp.BuildConfig
 import com.example.runningapp.R
 import com.example.runningapp.databinding.FragmentHomeBinding
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapSdk
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.PolylineOverlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.widget.LocationButtonView
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
+import java.io.InputStream
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -37,6 +44,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private var startTime: Long = 0
     private var totalDistance: Float = 0f
     private var lastLocation: Location? = null
+    private lateinit var routePoints: List<LatLng>
+    private var polyline: PolylineOverlay? = null
 
     private val handler = Handler(Looper.getMainLooper())
     private val updateRunnable = object : Runnable {
@@ -66,6 +75,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.hide()
+        routePoints = parseGpxFile("test.gpx")
 
         // Naver Map SDK 초기화 (클라이언트 ID 설정)
         NaverMapSdk.getInstance(requireContext()).client =
@@ -147,7 +157,62 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         }
+        if (routePoints.isNotEmpty()) {
+            val startPoint = routePoints.first()
+            val marker = Marker()
+            marker.position = startPoint
+            marker.map = naverMap
+
+            // 마커 클릭 리스너 설정
+            marker.setOnClickListener {
+                if (polyline == null) {
+                    // 전체 경로 표시
+                    polyline = PolylineOverlay().apply {
+                        coords = routePoints
+                        color = Color.BLUE
+                        map = naverMap
+                    }
+                } else {
+                    // 경로 제거
+                    polyline?.map = null
+                    polyline = null
+                }
+                true
+            }
+        }
     }
+
+    private fun parseGpxFile(fileName: String): List<LatLng> {
+        val points = mutableListOf<LatLng>()
+        try {
+            val inputStream: InputStream = requireContext().assets.open(fileName)
+            val factory = XmlPullParserFactory.newInstance()
+            val parser = factory.newPullParser()
+            parser.setInput(inputStream, null)
+
+            var eventType = parser.eventType
+            var lat = 0.0
+            var lon = 0.0
+
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                val name = parser.name
+                when (eventType) {
+                    XmlPullParser.START_TAG -> {
+                        if (name == "rtept") {
+                            lat = parser.getAttributeValue(null, "lat").toDouble()
+                            lon = parser.getAttributeValue(null, "lon").toDouble()
+                            points.add(LatLng(lat, lon))
+                        }
+                    }
+                }
+                eventType = parser.next()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return points
+    }
+
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.hide()
