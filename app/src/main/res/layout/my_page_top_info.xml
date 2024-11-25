@@ -6,7 +6,7 @@
     android:layout_height="@dimen/top_info_height"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#949494">
+    android:background="#EDEDED">
 
     <TextView
         android:id="@+id/text_name"
