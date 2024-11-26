@@ -8,5 +8,4 @@
     <dimen name="bottom_navigation_height">56dp</dimen>
     <dimen name="navigation_bottom_margin">72dp</dimen>
     <dimen name="top_info_height">125dp</dimen>
-    <dimen name="community_tag_min_width">59dp</dimen>
 </resources>
