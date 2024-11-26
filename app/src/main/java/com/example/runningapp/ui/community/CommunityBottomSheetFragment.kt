@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.LinearLayout
+import androidx.core.widget.NestedScrollView
 import com.example.runningapp.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -21,29 +22,36 @@ class CommunityBottomSheetFragment : BottomSheetDialogFragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_community_bottom_sheet, container, false)
 
-        // BottomSheet의 기본 높이 설정
-        dialog?.setOnShowListener { dialog ->
-            val bottomSheet = (dialog as BottomSheetDialog)
-                .findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-            bottomSheet?.let {
-                val behavior = BottomSheetBehavior.from(it)
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                behavior.skipCollapsed = true
+        return view
+    }
 
-                // 상단 여백만큼 피크 높이 설정 (mypage_top_info_height 만큼 띄우기)
-                val displayMetrics = resources.displayMetrics
-                val screenHeight = displayMetrics.heightPixels
-                val marginTop = resources.getDimensionPixelSize(R.dimen.top_info_height)
-                behavior.peekHeight = screenHeight - marginTop
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // BottomSheet의 최소 높이 95%로 변경 (수동으로 맞춘 값)
+        val displayMetrics = resources.displayMetrics
+        val screenHeight = displayMetrics.heightPixels
+        val minHeight = (screenHeight * 0.95).toInt()
+        view.findViewById<LinearLayout>(R.id.bottom_sheet_container).minimumHeight = minHeight // screenHeight
+
+        // BottomSheet의 동작 설정
+        val behavior = (dialog as BottomSheetDialog)?.behavior
+        behavior?.apply {
+            // behavior 세팅 값
+            state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            halfExpandedRatio = 0.8f
+            isDraggable = true
+            isHideable = true
+            isFitToContents = true
+
+            setPeekHeight((resources.displayMetrics.heightPixels * 0.5).toInt()) // 접힌 상태(STATE_COLLAPSED)의 높이
+
+            // 시작 스크롤 위치 설정
+            view.post {
+                behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+                view.findViewById<NestedScrollView>(R.id.nestedScrollView).scrollTo(0, 0)
             }
         }
-
-        val textItemName = view.findViewById<TextView>(R.id.text_item_name)
-        val textItemDetail = view.findViewById<TextView>(R.id.text_item_detail)
-        textItemName.text = itemName
-        textItemDetail.text = itemDetail
-
-        return view
     }
 
     fun setItemDetails(name: String, detail: String) {
