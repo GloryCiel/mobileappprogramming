@@ -30,6 +30,9 @@ import com.naver.maps.map.widget.LocationButtonView
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.InputStream
+import android.os.Environment
+import java.io.File
+import java.io.FileOutputStream
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -44,7 +47,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private var startTime: Long = 0
     private var totalDistance: Float = 0f
     private var lastLocation: Location? = null
-    private lateinit var routePoints: List<LatLng>
+    private var routePoints = mutableListOf<LatLng>()
     private var polyline: PolylineOverlay? = null
 
     private val handler = Handler(Looper.getMainLooper())
@@ -57,7 +60,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 val elapsedTimeInHours = elapsedTimeInMinutes / 60
                 val formattedTime = String.format("%02d:%02d:%02d", elapsedTimeInHours, elapsedTimeInMinutes % 60, elapsedTimeInSeconds % 60)
 
-                binding.runInfo.text = "걸린 시간: $formattedTime, 거리: ${totalDistance}m"
+                binding.runInfo.text = "달린 시간: $formattedTime\n거리: ${totalDistance}m\n 페이스: ${String.format("%.1f", totalDistance/elapsedTimeInSeconds)} m/s"
                 handler.postDelayed(this, 1000)
             }
         }
@@ -75,7 +78,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.hide()
-        routePoints = parseGpxFile("test.gpx")
+        routePoints = mutableListOf()
 
         // Naver Map SDK 초기화 (클라이언트 ID 설정)
         NaverMapSdk.getInstance(requireContext()).client =
@@ -103,18 +106,34 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                         binding.runInfo.isEnabled = false
                         handler.removeCallbacks(updateRunnable)
                         Toast.makeText(requireContext(), "러닝이 중지되었습니다.", Toast.LENGTH_SHORT).show()
+
+                        // GPX 파일 저장 여부를 묻는 팝업창 표시
+                        AlertDialog.Builder(requireContext())
+                            .setTitle("경로 저장")
+                            .setMessage("경로를 GPX 파일로 저장하시겠습니까?")
+                            .setPositiveButton("예") { _, _ ->
+                                saveGpxFile("saved_route.gpx", routePoints)
+                                Toast.makeText(requireContext(), "경로가 저장되었습니다.", Toast.LENGTH_SHORT).show()
+                            }
+                            .setNegativeButton("아니오", null)
+                            .show()
                     }
                     .setNegativeButton("아니오", null)
                     .show()
-            } else {
+            }else {
                 binding.runButton.text = "러닝 중"
                 isRunning = true
                 startTime = System.currentTimeMillis()
                 totalDistance = 0f
                 lastLocation = null
+                routePoints.clear() // 경로 초기화
                 binding.runInfo.isEnabled = true
                 handler.post(updateRunnable)
                 Toast.makeText(requireContext(), "러닝이 시작되었습니다.", Toast.LENGTH_SHORT).show()
+
+                // 현재 위치를 경로에 추가
+                val currentLocation = naverMap.locationOverlay.position
+                routePoints.add(LatLng(currentLocation.latitude, currentLocation.longitude))
             }
         }
 
@@ -123,6 +142,30 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
 
         binding.runInfo.isEnabled = false
+    }
+
+    private fun saveGpxFile(fileName: String, points: List<LatLng>) {
+        try {
+            val gpxContent = buildString {
+                append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+                append("<gpx version=\"1.1\" creator=\"RunningApp\">\n")
+                append("<trk>\n<trkseg>\n")
+                for (point in points) {
+                    append("<trkpt lat=\"${point.latitude}\" lon=\"${point.longitude}\"></trkpt>\n")
+                }
+                append("</trkseg>\n</trk>\n</gpx>")
+            }
+
+            val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val file = File(downloadDir, fileName)
+            FileOutputStream(file).use {
+                it.write(gpxContent.toByteArray())
+            }
+            Toast.makeText(requireContext(), "경로가 ${file.absolutePath}에 저장되었습니다.", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(requireContext(), "파일 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onMapReady(naverMap: NaverMap) {
@@ -151,9 +194,11 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                     if (distance > location.accuracy) {
                         totalDistance += distance
                         lastLocation = location
+                        routePoints.add(LatLng(location.latitude, location.longitude)) // 현재 위치를 경로에 추가
                     }
                 } else {
                     lastLocation = location
+                    routePoints.add(LatLng(location.latitude, location.longitude)) // 첫 위치를 경로에 추가
                 }
             }
         }
@@ -188,7 +233,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun parseGpxFile(fileName: String): List<LatLng> {
+    private fun parseGpxFile(fileName: String): MutableList<LatLng> {
         val points = mutableListOf<LatLng>()
         try {
             val inputStream: InputStream = requireContext().assets.open(fileName)
