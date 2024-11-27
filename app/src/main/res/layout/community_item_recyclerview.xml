@@ -23,7 +23,7 @@
             android:id="@+id/item_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="#All"
+            android:text="#태그 미리보기"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
             android:singleLine="true"
@@ -34,8 +34,8 @@
             android:id="@+id/item_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="제목 1"
+            android:layout_marginTop="5dp"
+            android:text="제목 미리보기"
             android:textSize="18sp"
             android:textStyle="bold"
             android:singleLine="true"
@@ -46,15 +46,14 @@
         <TextView
             android:id="@+id/item_content"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="6dp"
-            android:text="내용 표시"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="내용 미리보기"
             android:textSize="14sp"
             android:textColor="@android:color/black"
-            android:maxLines="3"
+            android:maxLines="2"
             android:ellipsize="end"
-            android:scrollHorizontally="false" />
+            android:scrollHorizontally="true" /> <!-- ... 이 나오도록 하는 부분 -->
     </LinearLayout>
 
     <!-- 우측 이미지 영역 -->

@@ -23,7 +23,14 @@ import com.example.runningapp.databinding.FragmentCommunityBinding
 class MyViewHolder(val binding: CommunityItemRecyclerviewBinding) :
     RecyclerView.ViewHolder(binding.root)
 
-class MyAdapter(val datas: MutableList<String>) :
+// 데이터 클래스 추가
+data class CommunityItem(
+    val tag: String,
+    val title: String,
+    val content: String
+)
+
+class MyAdapter(val datas: MutableList<CommunityItem>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemCount(): Int {
         return datas.size
@@ -37,14 +44,17 @@ class MyAdapter(val datas: MutableList<String>) :
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding = (holder as MyViewHolder).binding
-        //binding.itemCommunity.text = datas[position]
+        val item = datas[position]
+        
+        // 각 뷰에 데이터 바인딩
+        binding.itemTag.text = item.tag
+        binding.itemTitle.text = item.title
+        binding.itemContent.text = item.content
 
-        // 아이템 클릭 리스너 추가
+        // 아이템 클릭 리스너
         holder.itemView.setOnClickListener {
             val bottomSheet = CommunityBottomSheetFragment()
-            bottomSheet.setItemDetails(datas[position], "상세 정보") // 필요한 상세 정보를 설정
-
-            // BottomSheet 보여주기
+            bottomSheet.setItemDetails(item.title, item.content) // 수정된 부분
             bottomSheet.show((holder.itemView.context as AppCompatActivity).supportFragmentManager, bottomSheet.tag)
         }
     }
@@ -63,9 +73,13 @@ class CommunityFragment : Fragment() {
         // Toolbar 숨기기
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
-        val datas = mutableListOf<String>()
+        val datas = mutableListOf<CommunityItem>()
         for (i in 1..10) {
-            datas.add("Item $i")
+            datas.add(CommunityItem(
+                tag = "#태그${i}",
+                title = "제목 ${i}",
+                content = "게시글 내용 ${i}입니다. 여기에 더 많은 내용이 들어갈 수 있습니다. 다음은 더 많은 내용에 대한 테스트 글 입니다."
+            ))
         }
 
         val layoutManager = LinearLayoutManager(activity)
