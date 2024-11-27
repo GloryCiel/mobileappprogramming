@@ -157,27 +157,33 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         }
-        if (routePoints.isNotEmpty()) {
-            val startPoint = routePoints.first()
-            val marker = Marker()
-            marker.position = startPoint
-            marker.map = naverMap
 
-            // 마커 클릭 리스너 설정
-            marker.setOnClickListener {
-                if (polyline == null) {
-                    // 전체 경로 표시
-                    polyline = PolylineOverlay().apply {
-                        coords = routePoints
-                        color = Color.BLUE
-                        map = naverMap
+        // 여러 개의 GPX 파일을 불러와서 마커 추가
+        val gpxFiles = listOf("test.gpx", "school.gpx", "pretty_university_cross.gpx") // GPX 파일 목록
+        for (fileName in gpxFiles) {
+            val routePoints = parseGpxFile(fileName)
+            if (routePoints.isNotEmpty()) {
+                val startPoint = routePoints.first()
+                val marker = Marker()
+                marker.position = startPoint
+                marker.map = naverMap
+
+                // 마커 클릭 리스너 설정
+                marker.setOnClickListener {
+                    if (polyline == null) {
+                        // 전체 경로 표시
+                        polyline = PolylineOverlay().apply {
+                            coords = routePoints
+                            color = Color.BLUE
+                            map = naverMap
+                        }
+                    } else {
+                        // 경로 제거
+                        polyline?.map = null
+                        polyline = null
                     }
-                } else {
-                    // 경로 제거
-                    polyline?.map = null
-                    polyline = null
+                    true
                 }
-                true
             }
         }
     }
@@ -198,7 +204,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 val name = parser.name
                 when (eventType) {
                     XmlPullParser.START_TAG -> {
-                        if (name == "rtept") {
+                        if (name == "rtept" || name == "trkpt") {
                             lat = parser.getAttributeValue(null, "lat").toDouble()
                             lon = parser.getAttributeValue(null, "lon").toDouble()
                             points.add(LatLng(lat, lon))
