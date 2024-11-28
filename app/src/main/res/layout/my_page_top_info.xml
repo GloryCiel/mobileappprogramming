@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- layout_top_info.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/top_info_height"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#EDEDED">
+
+    <TextView
+        android:id="@+id/text_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="이름"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/text_grade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="등급: A"
+        android:textSize="16sp"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/text_preferred_area"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="선호 지역: 서울"
+        android:textSize="16sp"/>
+</LinearLayout>
