@@ -5,16 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.findCrew.FindCrewFragment">
+    tools:context=".ui.findCrew.FindCrewFragment"
+    android:layout_marginBottom="@dimen/bottom_navigation_height">
 
     <include
-        layout="@layout/find_crew_top_info"
+        layout="@layout/my_page_top_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <Spinner
+        android:id="@+id/select_location"
+        android:layout_width="392dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginVertical="5dp"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:textColor="#000000"
+        android:textSize="20dp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/findcrew_recyclerview"
-        android:layout_width="match_parent"
+        android:layout_width="392dp"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_marginHorizontal="10dp"
+        android:layout_weight="20" />
 </LinearLayout>
