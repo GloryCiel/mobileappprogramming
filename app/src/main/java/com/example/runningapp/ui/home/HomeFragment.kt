@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
@@ -19,20 +20,18 @@ import com.example.runningapp.R
 import com.example.runningapp.databinding.FragmentHomeBinding
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
-import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapSdk
+import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.PolylineOverlay
 import com.naver.maps.map.util.FusedLocationSource
-import com.naver.maps.map.widget.LocationButtonView
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
-import java.io.InputStream
-import android.os.Environment
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
