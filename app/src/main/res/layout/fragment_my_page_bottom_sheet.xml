@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:orientation="vertical"
-    android:layout_marginTop="@dimen/mypage_top_info_height">
+    android:layout_marginTop="@dimen/top_info_height">
 
     <TextView
         android:id="@+id/text_item_name"

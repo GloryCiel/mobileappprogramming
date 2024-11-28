@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- layout_top_info.xml -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/top_info_height"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#EDEDED">
+    android:background="#949494">
 
     <TextView
         android:id="@+id/text_name"

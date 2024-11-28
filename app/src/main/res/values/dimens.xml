@@ -7,5 +7,5 @@
     <dimen name="fab_margin_start">16dp</dimen>
     <dimen name="bottom_navigation_height">56dp</dimen>
     <dimen name="navigation_bottom_margin">72dp</dimen>
-    <dimen name="mypage_top_info_height">125dp</dimen>
+    <dimen name="top_info_height">125dp</dimen>
 </resources>
