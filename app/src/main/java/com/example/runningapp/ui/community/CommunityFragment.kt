@@ -27,7 +27,10 @@ class MyViewHolder(val binding: CommunityItemRecyclerviewBinding) :
 data class CommunityItem(
     val tag: String,
     val title: String,
-    val content: String
+    val content: String,
+    val userImage: Int,
+    val userName: String,
+    val userRank: String
 )
 
 class MyAdapter(val datas: MutableList<CommunityItem>) :
@@ -54,7 +57,13 @@ class MyAdapter(val datas: MutableList<CommunityItem>) :
         // 아이템 클릭 리스너
         holder.itemView.setOnClickListener {
             val bottomSheet = CommunityBottomSheetFragment()
-            bottomSheet.setItemDetails(item.title, item.content) // 수정된 부분
+            bottomSheet.setItemDetails(
+                title = item.title,
+                content = item.content,
+                userImage = item.userImage,
+                userName = item.userName,
+                userRank = item.userRank
+            )
             bottomSheet.show((holder.itemView.context as AppCompatActivity).supportFragmentManager, bottomSheet.tag)
         }
     }
@@ -78,7 +87,10 @@ class CommunityFragment : Fragment() {
             datas.add(CommunityItem(
                 tag = "#태그${i}",
                 title = "제목 ${i}",
-                content = "게시글 내용 ${i}입니다. 여기에 더 많은 내용이 들어갈 수 있습니다. 다음은 더 많은 내용에 대한 테스트 글 입니다."
+                content = "게시글 내용 ${i}입니다. 여기에 더 많은 내용이 들어갈 수 있습니다. 다음은 긴 글에 대한 테스트입니다. item_recycle에 ... 이 보이면 됩니다.",
+                userImage = R.drawable.icon_community,
+                userName = "사용자${i}",
+                userRank = "초보 러너"
             ))
         }
 
