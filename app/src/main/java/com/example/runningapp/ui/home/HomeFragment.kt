@@ -121,6 +121,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                     .show()
             }else {
                 binding.runButton.text = "러닝 중"
+                naverMap.locationTrackingMode = LocationTrackingMode.Follow
                 isRunning = true
                 startTime = System.currentTimeMillis()
                 totalDistance = 0f
