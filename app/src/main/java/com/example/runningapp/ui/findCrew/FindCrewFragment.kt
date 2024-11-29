@@ -59,7 +59,7 @@ class MyAdapter(val datas: MutableList<find_crew_item>) :
         // 아이템 클릭 리스너 추가
         holder.itemView.setOnClickListener {
             val bottomSheet = FindCrewBottomSheetFragment()
-            bottomSheet.setItemDetails(filterdList[position].content, "상세 정보") // 필요한 상세 정보를 설정
+            bottomSheet.setItemDetails(filterdList[position].title, "상세 정보") // 필요한 상세 정보를 설정
 
             // BottomSheet 보여주기
             bottomSheet.show((holder.itemView.context as AppCompatActivity).supportFragmentManager, bottomSheet.tag)
@@ -94,6 +94,12 @@ class FindCrewFragment : Fragment() {
                 "2024-$i-26",
                 "res/drawable/ic_launcher_background.xml",
                 "수성구"))
+            datas.add(find_crew_item(
+                "$i 제목",
+                "상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용",
+                "2024-$i-26",
+                "res/drawable/ic_launcher_background.xml",
+                "중구"))
         }
 
         val locations = getLocations(requireContext())
