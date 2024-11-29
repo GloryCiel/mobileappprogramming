@@ -13,11 +13,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/community_recyclerview"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/community_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_write"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:src="@drawable/icon_write"
+            android:backgroundTint="#FFD9D9D9"
+            app:backgroundTint="#FFD9D9D9"
+            app:maxImageSize="30dp"
+            app:fabSize="normal"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <!-- viewModel 사용법 확인을 위해 남겨둠 -->
 <!--    <TextView-->
