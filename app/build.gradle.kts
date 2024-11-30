@@ -1,8 +1,9 @@
 import java.util.Properties
 
 plugins {
-    id("com.android.application") version "8.6.1"
+    id("com.android.application") version "8.7.2"
     id("org.jetbrains.kotlin.android") version "1.9.10"
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -70,4 +71,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // room 관련 추가
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
 }
