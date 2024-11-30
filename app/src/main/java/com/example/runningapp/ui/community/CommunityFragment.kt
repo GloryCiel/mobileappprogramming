@@ -23,16 +23,6 @@ import com.example.runningapp.databinding.FragmentCommunityBinding
 class MyViewHolder(val binding: CommunityItemRecyclerviewBinding) :
     RecyclerView.ViewHolder(binding.root)
 
-// 데이터 클래스 추가
-data class CommunityItem(
-    val tag: String,
-    val title: String,
-    val content: String,
-    val userImage: Int,
-    val userName: String,
-    val userRank: String
-)
-
 class MyAdapter(val datas: MutableList<CommunityItem>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemCount(): Int {
@@ -99,6 +89,14 @@ class CommunityFragment : Fragment() {
 
         val adapter = MyAdapter(datas)
         binding.communityRecyclerview.adapter = adapter
+
+        // fab 클릭 리스너 (write post 띄우기)
+        binding.fabWrite.setOnClickListener {
+            WritePostBottomSheetFragment().show(
+                childFragmentManager,
+                "WritePostBottomSheet"
+            )
+        }
 
         // viewModel 사용법 확인을 위해 남겨둠 (지우지 마세요)
 //        val communityViewModel =
