@@ -15,7 +15,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
-            android:layout_margin="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginRight="16dp"
             android:text="runButton" />
 
         <Button
@@ -24,7 +25,7 @@
             android:layout_height="48dp"
             android:layout_gravity="bottom|start"
             android:layout_marginStart="16dp"
-            android:layout_marginBottom="128dp"
+            android:layout_marginBottom="64dp"
             android:background="#80FFFFFF"
             android:text="Loc" />
 
@@ -35,7 +36,6 @@
             android:layout_gravity="bottom|start"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="64dp"
             android:text="more Info" />
 
         <Button
@@ -44,7 +44,6 @@
             android:layout_height="92dp"
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="64dp"
             android:text="run Info" />
     </FrameLayout>
 

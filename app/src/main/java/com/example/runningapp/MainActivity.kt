@@ -21,20 +21,12 @@ class MainActivity : AppCompatActivity() {
         // 바인딩 설정
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.appBarMain.toolbar)
 
         // Navigation 설정
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         val bottomNavView: BottomNavigationView = binding.bottomNavigation
 
-        // AppBarConfiguration 설정
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_home, R.id.nav_findcrew, R.id.nav_community, R.id.nav_mypage
-            )
-        )
-
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        // bottom navigation view 에 controller 연결
         bottomNavView.setupWithNavController(navController)
     }
 
