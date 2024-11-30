@@ -1,4 +1,4 @@
-package com.example.runningapp.ui.findCrew
+package com.example.runningapp.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
