@@ -1,0 +1,61 @@
+참고할 내용들 기록 (json 데이터 사용 관련)
+
+- gson : 대충 json 잘 포맷 맞춰서 바꾸는 그런거
+
+- BaseStorage.kt - <T>와 관련해서 주석 달아놨음 참고
+
+- json 파일 위치 : 어플 내부에 저장됨 (지금은 에뮬레이터 안에 저장 되는 거임)
+```
+json 파일까지 접근 경로는 아래와 같음
+
+상단 메뉴바 > View > Tool Windows > Device Explorer
+        (여기서 그냥 running 검색하는게 빠름)
+        > data > data > com.example.runningapp
+        > files
+        이 아래에 Storage에 FILENAME 이라고 해둔 json 있음
+
+** json 1줄 말고 이쁘게 보기 **
+Windows/Linux: Ctrl + Alt + L
+Mac: Command + Option + L
+보고 나서는 다시 원래대로 돌려 놓는게 좋긴 함
+```
+
+- 날짜 형식 사용법
+```
+val milliseconds = 1701403200000    // 2024-12-01 12:00:00 를 표현한 값 (
+val date = Date(milliseconds)
+val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+val dateString = formatter.format(date)  // "2024-12-01 12:00:00"
+
+참고로 System.currentTimeMillis()는
+1970년 1월 1일 00:00:00 UTC (Unix Epoch Time)부터 현재까지의 경과 시간을
+밀리초(milliseconds) 단위로 반환
+```
+
+- MainActivity onCreate() 설정 순서 (그냥 참고용)
+```
+override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // 1. 초기 설정 (테마, 상태바 등)
+        setTheme(R.style.Theme_RunningApp)
+        // window.statusBarColor = ...
+
+        // 2. 바인딩 설정
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // 3. 데이터 초기화 (DB, SharedPreferences 등)
+        TestDataInitializer.initializeIfNeeded(this)
+
+        // 4. UI 컴포넌트 초기화 및 설정
+        setupBottomNavigation()
+        setupToolbar()
+
+        // 5. 옵저버 설정
+        observeViewModels()
+
+        // 6. 인텐트 처리 (있는 경우)
+        handleIntent(intent)
+    }
+```

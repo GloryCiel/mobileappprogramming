@@ -7,6 +7,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.appcompat.app.AppCompatActivity
+import com.example.runningapp.data.TestDataInitializer
 import com.example.runningapp.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -20,6 +21,9 @@ class MainActivity : AppCompatActivity() {
         // 바인딩 설정
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // 테스트 데이터 초기화
+        TestDataInitializer.initializeIfNeeded(this)
 
         // Navigation 설정
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
