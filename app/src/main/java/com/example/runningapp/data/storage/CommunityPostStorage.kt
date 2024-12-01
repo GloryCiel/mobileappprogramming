@@ -30,7 +30,7 @@ object CommunityPostStorage : BaseStorage() {
     ): CommunityPost {
         val posts = loadPosts(context).toMutableList()
         val newPost = CommunityPost(
-            id = generateNewId(context),
+            id = getNextId(context, FILENAME),  // 자동으로 다음 ID 생성
             title = title,
             content = content,
             tag = tag,
@@ -115,11 +115,6 @@ object CommunityPostStorage : BaseStorage() {
             savePosts(context, posts)
         }
         return removed
-    }
-
-    // 유틸리티 함수
-    private fun generateNewId(context: Context): Int {
-        return loadPosts(context).maxOfOrNull { it.id }?.plus(1) ?: 1
     }
 }
 

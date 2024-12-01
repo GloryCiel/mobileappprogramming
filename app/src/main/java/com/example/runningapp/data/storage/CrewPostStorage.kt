@@ -30,7 +30,7 @@ object CrewPostStorage : BaseStorage() {
     ): CrewPost {
         val posts = loadPosts(context).toMutableList()
         val newPost = CrewPost(
-            id = generateNewId(context),
+            id = getNextId(context, FILENAME),  // 자동으로 다음 ID 생성
             title = title,
             content = content,
             userId = userId,
@@ -129,11 +129,6 @@ object CrewPostStorage : BaseStorage() {
             savePosts(context, posts)
         }
         return removed
-    }
-
-    // 유틸리티 함수
-    private fun generateNewId(context: Context): Int {
-        return loadPosts(context).maxOfOrNull { it.id }?.plus(1) ?: 1
     }
 }
 

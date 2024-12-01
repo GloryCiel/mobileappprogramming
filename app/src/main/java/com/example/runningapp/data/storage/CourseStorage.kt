@@ -31,7 +31,7 @@ object CourseStorage : BaseStorage() {
     ): Course {
         val courses = loadCourses(context).toMutableList()
         val newCourse = Course(
-            id = generateNewId(context),
+            id = getNextId(context, FILENAME),  // 자동으로 다음 ID 생성
             title = title,
             distance = distance,
             description = description,
@@ -122,11 +122,6 @@ object CourseStorage : BaseStorage() {
             course.title.contains(query, ignoreCase = true) ||
                     course.description.contains(query, ignoreCase = true)
         }
-    }
-
-    // 유틸리티 함수
-    private fun generateNewId(context: Context): Int {
-        return loadCourses(context).maxOfOrNull { it.id }?.plus(1) ?: 1
     }
 }
 

@@ -24,7 +24,7 @@ object UserStorage : BaseStorage() {
     fun addUser(context: Context, name: String, rank: UserRank, region: PreferredRegion): User {
         val users = loadUsers(context).toMutableList()
         val newUser = User(
-            id = generateNewId(context),
+            id = getNextId(context, FILENAME),  // 자동으로 다음 ID 생성
             name = name,
             rank = rank,
             preferredRegion = region
@@ -32,11 +32,6 @@ object UserStorage : BaseStorage() {
         users.add(newUser)
         saveUsers(context, users)
         return newUser
-    }
-
-    // 유틸리티 함수들
-    fun generateNewId(context: Context): Int {
-        return loadUsers(context).maxOfOrNull { it.id }?.plus(1) ?: 1
     }
 
     // 필터링 함수들
