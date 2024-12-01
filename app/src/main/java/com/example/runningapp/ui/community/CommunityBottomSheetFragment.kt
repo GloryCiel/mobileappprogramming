@@ -4,11 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.core.widget.NestedScrollView
-import com.example.runningapp.R
+import com.bumptech.glide.Glide
 import com.example.runningapp.databinding.FragmentCommunityBottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -21,7 +17,7 @@ class CommunityBottomSheetFragment : BottomSheetDialogFragment() {
 
     private lateinit var itemTitle: String
     private lateinit var itemContent: String
-    private var itemUserImage: Int = 0
+    private lateinit var itemUserImage: String
     private lateinit var itemUserName: String
     private lateinit var itemUserRank: String
 
@@ -36,12 +32,15 @@ class CommunityBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 데이터 표시 (바인딩 사용)
+        // 데이터 바인딩
         binding.title.text = itemTitle
         binding.content.text = itemContent
-        binding.userImage.setImageResource(itemUserImage)
         binding.userName.text = itemUserName
         binding.userRank.text = itemUserRank
+        Glide.with(this)    // 여기는 이미지 지정
+            .load(itemUserImage)
+            .circleCrop()
+            .into(binding.userImage)  // BottomSheet의 이미지뷰 ID
 
         // BottomSheet의 최소 높이 설정
         val displayMetrics = resources.displayMetrics
@@ -72,10 +71,10 @@ class CommunityBottomSheetFragment : BottomSheetDialogFragment() {
         _binding = null  // 메모리 누수 방지
     }
 
-    fun setItemDetails(
+    fun setItemDetails( // item 저장만 담당
         title: String, 
         content: String, 
-        userImage: Int, 
+        userImage: String,
         userName: String, 
         userRank: String
     ) {
