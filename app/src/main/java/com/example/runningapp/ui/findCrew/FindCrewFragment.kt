@@ -83,9 +83,6 @@ class FindCrewFragment : Fragment() {
     ): View {
         val binding = FragmentFindCrewBinding.inflate(inflater, container, false)
 
-        // Toolbar 숨기기
-        (activity as? AppCompatActivity)?.supportActionBar?.hide()
-
         val datas = mutableListOf<find_crew_item>()
         for (i in 1..10) {
             datas.add(find_crew_item(

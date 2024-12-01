@@ -109,9 +109,6 @@ class MyPageFragment : Fragment() {
     ): View {
         val binding = FragmentMyPageBinding.inflate(inflater, container, false)
 
-        // Toolbar 숨기기
-        (activity as? AppCompatActivity)?.supportActionBar?.hide()
-
         val datas = mutableListOf<runningRecord_item>()
         //csv에 있는 data로 채우는 작업 필요. 현재 아래는 test용
          for (i in 1..10) {
