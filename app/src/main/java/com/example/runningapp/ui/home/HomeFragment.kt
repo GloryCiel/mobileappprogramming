@@ -77,7 +77,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
         routePoints = mutableListOf()
 
         // Naver Map SDK 초기화 (클라이언트 ID 설정)

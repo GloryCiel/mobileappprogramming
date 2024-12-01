@@ -69,9 +69,6 @@ class CommunityFragment : Fragment() {
 
         val binding = FragmentCommunityBinding.inflate(inflater, container, false)
 
-        // Toolbar 숨기기
-        (activity as? AppCompatActivity)?.supportActionBar?.hide()
-
         val datas = mutableListOf<CommunityItem>()
         for (i in 1..10) {
             datas.add(CommunityItem(
