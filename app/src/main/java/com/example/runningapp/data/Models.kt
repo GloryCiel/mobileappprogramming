@@ -9,7 +9,7 @@ data class User(
     val createdAt: Long = System.currentTimeMillis()
 )
 
-data class RunningCourse(
+data class Course(
     val id: Int,
     val title: String,
     val date: Long = System.currentTimeMillis(),
