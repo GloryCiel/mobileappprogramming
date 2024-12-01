@@ -2,7 +2,7 @@ package com.example.runningapp.data
 
 data class User(
     val id: Int,
-    val profilePhotoPath: String = "file:///android_asset/defaultProfile.png",
+    val profilePhotoPath: String = "file:///android_asset/default/defaultProfile.png",
     val name: String,
     val rank: UserRank = UserRank.BRONZE,
     val preferredRegion: PreferredRegion,
@@ -14,7 +14,7 @@ data class RunningCourse(
     val title: String,
     val date: Long = System.currentTimeMillis(),
     val distance: Float,
-    val courseImagePath: String = "file:///android_asset/defaultCourse.png",
+    val courseImagePath: String = "file:///android_asset/default/defaultCourse.png",
     val description: String,
     val gpxFilePath: String,
     val userId: Int,
@@ -27,7 +27,7 @@ data class CrewPost(
     val content: String,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
-    val courseImagePath: String = "file:///android_asset/defaultCourse.png",
+    val courseImagePath: String = "file:///android_asset/default/defaultCourse.png",
     val userId: Int,
     val courseId: Int?,
     val maxMembers: Int? = null,
@@ -41,7 +41,7 @@ data class CommunityPost(
     val content: String,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
-    val imagePath: String = "file:///android_asset/defaultPost.png",
+    val imagePath: String = "file:///android_asset/default/defaultPost.png",
     val userId: Int,
     val likeCount: Int = 0,
     val commentCount: Int = 0
