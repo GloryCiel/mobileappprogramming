@@ -1,7 +1,15 @@
 package com.example.runningapp.data
 
-enum class CommunityTag {
-    ALL, TAG1, TAG2, TAG3, TAG4, TAG5
+enum class CommunityTag(val korName: String) {
+    ALL("전체"),
+    TAG1("공지사항"),
+    TAG2("질문"),
+    TAG3("정보공유"),
+    TAG4("태그1"),
+    TAG5("태그2"),
+    TAG6("태그3");
+
+    override fun toString(): String = korName
 }
 
 enum class UserRank {
