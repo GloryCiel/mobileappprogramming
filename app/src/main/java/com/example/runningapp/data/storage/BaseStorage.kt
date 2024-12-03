@@ -37,18 +37,22 @@ abstract class BaseStorage {
     }
 
     protected fun getNextId(context: Context, filename: String): Int {
-        val currentData = loadFromFile<List<Any>>(context, filename)
+        val currentData = loadFromFile<List<*>>(context, filename)
         return if (currentData.isNullOrEmpty()) {
             1  // 첫 번째 데이터면 1부터 시작
         } else {
             try {
-                // 현재 저장된 데이터 중 가장 큰 ID + 1
+                // LinkedTreeMap으로 변환된 객체에서 id를 안전하게 추출
                 val maxId = currentData.maxOf { item ->
-                    (item as? Map<*, *>)?.get("id") as? Int ?: 0
+                    when (item) {
+                        is Map<*, *> -> (item["id"] as? Number)?.toInt() ?: 0
+                        else -> 0
+                    }
                 }
                 maxId + 1
             } catch (e: Exception) {
-                currentData.size + 1  // 예외 발생시 리스트 크기 + 1
+                Log.e("BaseStorage", "Error getting next id: ${e.message}")
+                currentData.size + 1
             }
         }
     }

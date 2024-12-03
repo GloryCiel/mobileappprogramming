@@ -21,10 +21,11 @@ object UserStorage : BaseStorage() {
         return loadUsers(context).find { it.id == userId }
     }
 
-    fun addUser(context: Context, name: String, rank: UserRank, region: PreferredRegion): User {
+    fun addUser(context: Context, password: String, name: String, rank: UserRank, region: PreferredRegion): User {
         val users = loadUsers(context).toMutableList()
         val newUser = User(
             id = getNextId(context, FILENAME),  // 자동으로 다음 ID 생성
+            password = password,
             name = name,
             rank = rank,
             preferredRegion = region

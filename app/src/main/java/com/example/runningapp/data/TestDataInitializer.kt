@@ -35,51 +35,60 @@ object TestDataInitializer {
         Models.kt에 System.currentTimeMillis()로 들어가 있음
          */
 
+        val dummy_count = 4
+
         // 1. 테스트 유저 생성
-        val users = (1..4).map { index ->
-            UserStorage.addUser(
+        val users = mutableListOf<User>()
+        for (index in 1..4) {
+            val user = UserStorage.addUser(
                 context = context,
                 name = "test_user$index",
                 rank = if (index % 2 == 0) UserRank.SILVER else UserRank.BRONZE,
-                region = if (index % 2 == 0) PreferredRegion.SUSEONG_GU else PreferredRegion.JUNG_GU // 수성구 or 중구
+                region = if (index % 2 == 0) PreferredRegion.SUSEONG_GU else PreferredRegion.JUNG_GU
             )
+            users.add(user)
         }
 
         // 2. 테스트 코스 생성
-        val courses = (1..4).map { index ->
-            CourseStorage.addCourse(
+        val courses = mutableListOf<Course>()
+        for (index in 1..4) {
+            val course = CourseStorage.addCourse(
                 context = context,
                 title = "test_course$index",
                 distance = (index * 10).toFloat(),
                 description = "test_description$index",
                 gpxFilePath = "test_gpx$index.gpx",
-                userId = users[index % users.size].id,  // 1..4
+                userId = users[index % dummy_count].id,  // 1..4
                 isPublic = true
             )
-
+            courses.add(course)
         }
 
         // 3. 테스트 커뮤니티 게시글 생성
-        val communitys = (1..8).map { index ->
-            CommunityPostStorage.addPost(
+        val communitys = mutableListOf<CommunityPost>()
+        for (index in 1..8) {
+            val community = CommunityPostStorage.addPost(
                 context = context,
                 title = "test_community$index",
                 content = "test_content$index",
                 tag = if (index % 2 == 0) CommunityTag.TAG1 else CommunityTag.TAG2,
-                userId = users[index % users.size].id,  // 1..4
+                userId = users[index % dummy_count].id,  // 1..4
             )
+            communitys.add(community)
         }
 
         // 4. 테스트 크루 모집글 생성
-        val crews = (1..8).map { index ->
-            CrewPostStorage.addPost(
+        val crews = mutableListOf<CrewPost>()
+        for (index in 1..8) {
+            val crew = CrewPostStorage.addPost(
                 context = context,
                 title = "test_crew$index",
                 content = "test_content$index",
-                userId = users[index % users.size].id,  // 1..4
-                courseId = courses[index % courses.size].id,
+                userId = users[index % dummy_count].id,  // 1..4
+                courseId = courses[index % dummy_count].id,
                 maxMembers = (index % 4) + 2  // 2..5
             )
+            crews.add(crew)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.runningapp.data
 
 data class User(
     val id: Int,
+    val password: String,
     val profilePhotoPath: String = "file:///android_asset/default/defaultProfile.png",
     val name: String,
     val rank: UserRank = UserRank.BRONZE,
