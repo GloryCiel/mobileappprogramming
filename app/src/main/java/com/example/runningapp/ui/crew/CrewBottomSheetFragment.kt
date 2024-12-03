@@ -1,4 +1,4 @@
-package com.example.runningapp.ui.findCrew
+package com.example.runningapp.ui.crew
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.TextView
 import com.example.runningapp.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class FindCrewBottomSheetFragment : BottomSheetDialogFragment() {
+class CrewBottomSheetFragment : BottomSheetDialogFragment() {
 
     private lateinit var itemName: String
     private lateinit var itemDetail: String
@@ -17,7 +17,7 @@ class FindCrewBottomSheetFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.fragment_find_crew_bottom_sheet, container, false)
+        val view = inflater.inflate(R.layout.bottom_sheet_crew, container, false)
 
         val textItemName = view.findViewById<TextView>(R.id.text_item_name)
         val textItemDetail = view.findViewById<TextView>(R.id.text_item_detail)

@@ -13,10 +13,10 @@ import com.example.runningapp.data.storage.CommunityPostStorage
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.example.runningapp.databinding.FragmentWritePostBottomSheetBinding
+import com.example.runningapp.databinding.BottomSheetWritePostBinding
 
 class WritePostBottomSheetFragment : BottomSheetDialogFragment() {
-    private var _binding: FragmentWritePostBottomSheetBinding? = null
+    private var _binding: BottomSheetWritePostBinding? = null
     private val binding get() = _binding!!
     private val currentUser: User by lazy {
         (activity as MainActivity).getCurrentUser()
@@ -27,7 +27,7 @@ class WritePostBottomSheetFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentWritePostBottomSheetBinding.inflate(inflater, container, false)
+        _binding = BottomSheetWritePostBinding.inflate(inflater, container, false)
         return binding.root
     }
 

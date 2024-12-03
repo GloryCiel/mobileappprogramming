@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.runningapp.data.CommunityPost
 import com.example.runningapp.data.storage.UserStorage
-import com.example.runningapp.databinding.CommunityItemRecyclerviewBinding
+import com.example.runningapp.databinding.ItemCommunityBinding
 
 class CommunityViewHolder(
-    private val binding: CommunityItemRecyclerviewBinding
+    private val binding: ItemCommunityBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(post: CommunityPost) {
@@ -47,7 +47,7 @@ class CommunityAdapter : ListAdapter<CommunityPost, CommunityViewHolder>(DiffCal
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommunityViewHolder {
         return CommunityViewHolder(
-            CommunityItemRecyclerviewBinding.inflate(
+            ItemCommunityBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false

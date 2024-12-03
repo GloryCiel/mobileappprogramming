@@ -17,7 +17,7 @@ class MyPageBottomSheetFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.fragment_my_page_bottom_sheet, container, false)
+        val view = inflater.inflate(R.layout.bottom_sheet_my_page, container, false)
 
         val textItemName = view.findViewById<TextView>(R.id.text_item_name)
         val textItemDetail = view.findViewById<TextView>(R.id.text_item_detail)

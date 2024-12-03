@@ -9,7 +9,7 @@
     android:layout_marginBottom="@dimen/bottom_navigation_height">
 
     <include
-        layout="@layout/my_page_top_info"
+        layout="@layout/top_info_my_page"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

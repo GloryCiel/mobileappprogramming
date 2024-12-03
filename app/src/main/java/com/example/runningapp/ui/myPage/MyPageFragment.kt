@@ -1,24 +1,15 @@
 package com.example.runningapp.ui.myPage
 
-import android.content.Context
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.runningapp.R
 import com.example.runningapp.databinding.FragmentMyPageBinding
-import com.example.runningapp.databinding.MyPageItemRecyclerviewBinding
+import com.example.runningapp.databinding.ItemMyPageBinding
 
 class runningRecord_item(
     val title: String,
@@ -28,7 +19,7 @@ class runningRecord_item(
     val img: String
 )
 
-class MyViewHolder(val binding: MyPageItemRecyclerviewBinding) :
+class MyViewHolder(val binding: ItemMyPageBinding) :
     RecyclerView.ViewHolder(binding.root)
 
 class MyAdapter(val datas: MutableList<runningRecord_item>) :
@@ -40,7 +31,7 @@ class MyAdapter(val datas: MutableList<runningRecord_item>) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
             RecyclerView.ViewHolder =
         MyViewHolder(
-            MyPageItemRecyclerviewBinding.inflate(LayoutInflater.from(
+            ItemMyPageBinding.inflate(LayoutInflater.from(
                 parent.context), parent, false))
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

@@ -10,7 +10,7 @@
 
     <include
         android:id="@+id/top_info"
-        layout="@layout/community_top_info"
+        layout="@layout/top_info_community"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

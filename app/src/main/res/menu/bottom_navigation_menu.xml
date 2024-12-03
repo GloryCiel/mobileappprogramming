@@ -10,9 +10,9 @@
             android:title="@string/menu_home" />
 
         <item
-            android:id="@+id/nav_findcrew"
-            android:icon="@drawable/icon_findcrew"
-            android:title="@string/menu_findcrew" />
+            android:id="@+id/nav_crew"
+            android:icon="@drawable/icon_crew"
+            android:title="@string/menu_crew" />
 
         <item
             android:id="@+id/nav_community"

@@ -26,7 +26,6 @@ import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.PolylineOverlay
 import com.naver.maps.map.util.FusedLocationSource
-import com.naver.maps.map.widget.LocationButtonView
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.InputStream

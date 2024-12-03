@@ -5,14 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
-import com.example.runningapp.databinding.FragmentCommunityBottomSheetBinding
+import com.example.runningapp.databinding.BottomSheetCommunityBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class CommunityBottomSheetFragment : BottomSheetDialogFragment() {
 
-    private var _binding: FragmentCommunityBottomSheetBinding? = null
+    private var _binding: BottomSheetCommunityBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var itemTitle: String
@@ -25,7 +25,7 @@ class CommunityBottomSheetFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCommunityBottomSheetBinding.inflate(inflater, container, false)
+        _binding = BottomSheetCommunityBinding.inflate(inflater, container, false)
         return binding.root
     }
 

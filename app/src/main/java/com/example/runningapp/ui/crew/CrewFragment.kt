@@ -1,4 +1,4 @@
-package com.example.runningapp.ui.findCrew
+package com.example.runningapp.ui.crew
 
 import android.content.Context
 import android.os.Bundle
@@ -8,14 +8,12 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.runningapp.R
-import com.example.runningapp.databinding.FindCrewItemRecyclerviewBinding
-import com.example.runningapp.databinding.FragmentFindCrewBinding
+import com.example.runningapp.databinding.ItemCrewBinding
+import com.example.runningapp.databinding.FragmentCrewBinding
 
 class find_crew_item(
     val title:String,
@@ -31,7 +29,7 @@ fun getLocations(context: Context): Array<String> {
 
 
 
-class MyViewHolder(val binding: FindCrewItemRecyclerviewBinding) :
+class MyViewHolder(val binding: ItemCrewBinding) :
     RecyclerView.ViewHolder(binding.root)
 
 class MyAdapter(val datas: MutableList<find_crew_item>) :
@@ -46,7 +44,7 @@ class MyAdapter(val datas: MutableList<find_crew_item>) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
             RecyclerView.ViewHolder =
         MyViewHolder(
-            FindCrewItemRecyclerviewBinding.inflate(LayoutInflater.from(
+            ItemCrewBinding.inflate(LayoutInflater.from(
                 parent.context), parent, false))
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -58,7 +56,7 @@ class MyAdapter(val datas: MutableList<find_crew_item>) :
 
         // 아이템 클릭 리스너 추가
         holder.itemView.setOnClickListener {
-            val bottomSheet = FindCrewBottomSheetFragment()
+            val bottomSheet = CrewBottomSheetFragment()
             bottomSheet.setItemDetails(filterdList[position].title, "상세 정보") // 필요한 상세 정보를 설정
 
             // BottomSheet 보여주기
@@ -74,29 +72,33 @@ class MyAdapter(val datas: MutableList<find_crew_item>) :
     }
 }
 
-class FindCrewFragment : Fragment() {
+class CrewFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = FragmentFindCrewBinding.inflate(inflater, container, false)
+        val binding = FragmentCrewBinding.inflate(inflater, container, false)
 
         val datas = mutableListOf<find_crew_item>()
         for (i in 1..10) {
-            datas.add(find_crew_item(
+            datas.add(
+                find_crew_item(
                 "제목 $i",
                 "상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용",
                 "2024-$i-26",
                 "res/drawable/ic_launcher_background.xml",
-                "수성구"))
-            datas.add(find_crew_item(
+                "수성구")
+            )
+            datas.add(
+                find_crew_item(
                 "$i 제목",
                 "상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용",
                 "2024-$i-26",
                 "res/drawable/ic_launcher_background.xml",
-                "중구"))
+                "중구")
+            )
         }
 
         val locations = getLocations(requireContext())
@@ -106,19 +108,19 @@ class FindCrewFragment : Fragment() {
         binding.selectLocation.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val selectedLocation = locations[position]
-                (binding.findcrewRecyclerview.adapter as? MyAdapter)?.filterData(selectedLocation)
+                (binding.crewRecyclerview.adapter as? MyAdapter)?.filterData(selectedLocation)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                (binding.findcrewRecyclerview.adapter as? MyAdapter)?.filterData("")
+                (binding.crewRecyclerview.adapter as? MyAdapter)?.filterData("")
             }
         }
 
         val layoutManager = LinearLayoutManager(activity)
-        binding.findcrewRecyclerview.layoutManager = layoutManager
+        binding.crewRecyclerview.layoutManager = layoutManager
 
         val adapter = MyAdapter(datas)
-        binding.findcrewRecyclerview.adapter = adapter
+        binding.crewRecyclerview.adapter = adapter
 
         return binding.root
     }

@@ -39,10 +39,10 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_findcrew"
-        android:name="com.example.runningapp.ui.findCrew.FindCrewFragment"
-        android:label="@string/menu_findcrew"
-        tools:layout="@layout/fragment_community" />
+        android:id="@+id/nav_crew"
+        android:name="com.example.runningapp.ui.crew.CrewFragment"
+        android:label="@string/menu_crew"
+        tools:layout="@layout/fragment_crew" />
 
     <fragment
         android:id="@+id/nav_community"
@@ -54,5 +54,5 @@
         android:id="@+id/nav_mypage"
         android:name="com.example.runningapp.ui.myPage.MyPageFragment"
         android:label="@string/menu_mypage"
-        tools:layout="@layout/fragment_community" />
+        tools:layout="@layout/fragment_my_page" />
 </navigation>
