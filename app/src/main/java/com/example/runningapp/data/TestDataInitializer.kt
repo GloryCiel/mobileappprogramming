@@ -41,12 +41,14 @@ object TestDataInitializer {
         val users = mutableListOf<User>()
         for (index in 1..4) {
             val user = UserStorage.addUser(
+                password = "test",
                 context = context,
                 name = "test_user$index",
-                rank = if (index % 2 == 0) UserRank.SILVER else UserRank.BRONZE,
                 region = if (index % 2 == 0) PreferredRegion.SUSEONG_GU else PreferredRegion.JUNG_GU
             )
-            users.add(user)
+            if (user != null) {  // null 체크 추가
+                users.add(user)
+            }
         }
 
         // 2. 테스트 코스 생성

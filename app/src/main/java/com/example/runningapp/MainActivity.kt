@@ -1,19 +1,24 @@
 package com.example.runningapp
 import android.os.Bundle
-import android.view.Menu
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.appcompat.app.AppCompatActivity
 import com.example.runningapp.data.TestDataInitializer
+import com.example.runningapp.data.User
 import com.example.runningapp.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.view.View
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var currentUser: User? = null
+
+    fun setCurrentUser(user: User) {
+        currentUser = user
+    }
+
+    fun getCurrentUser(): User? = currentUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +35,12 @@ class MainActivity : AppCompatActivity() {
         val bottomNavView: BottomNavigationView = binding.bottomNavigation
 
         bottomNavView.setupWithNavController(navController)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) { // 로그인 관련 bottom nav 안 보이게 처리
+                R.id.loginFragment, R.id.registerFragment -> bottomNavView.visibility = View.GONE
+                else -> bottomNavView.visibility = View.VISIBLE
+            }
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

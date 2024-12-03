@@ -2,9 +2,9 @@ package com.example.runningapp.data
 
 data class User(
     val id: Int,
-    val password: String,
     val profilePhotoPath: String = "file:///android_asset/default/defaultProfile.png",
     val name: String,
+    val password: String,
     val rank: UserRank = UserRank.BRONZE,
     val preferredRegion: PreferredRegion,
     val createdAt: Long = System.currentTimeMillis()

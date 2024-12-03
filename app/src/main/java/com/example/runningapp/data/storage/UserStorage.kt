@@ -21,17 +21,27 @@ object UserStorage : BaseStorage() {
         return loadUsers(context).find { it.id == userId }
     }
 
-    fun addUser(context: Context, password: String, name: String, rank: UserRank, region: PreferredRegion): User {
-        val users = loadUsers(context).toMutableList()
+    fun addUser(
+        context: Context,
+        name: String,
+        password: String,
+        region: PreferredRegion
+    ): User? {
+        // 이미 존재하는 사용자인지 확인
+        val users = loadUsers(context)
+        if (users.any { it.name == name }) {
+            return null
+        }
+
         val newUser = User(
-            id = getNextId(context, FILENAME),  // 자동으로 다음 ID 생성
-            password = password,
+            id = getNextId(context, FILENAME),
             name = name,
-            rank = rank,
+            password = password,
             preferredRegion = region
         )
-        users.add(newUser)
-        saveUsers(context, users)
+
+        val updatedUsers = users + newUser
+        saveUsers(context, updatedUsers)
         return newUser
     }
 
@@ -73,6 +83,12 @@ object UserStorage : BaseStorage() {
             saveUsers(context, users)
         }
         return removed
+    }
+
+    // ID, PW 검증
+    fun validateUser(context: Context, name: String, password: String): User? {
+        val users = loadUsers(context)
+        return users.find { it.name == name && it.password == password }
     }
 }
 
