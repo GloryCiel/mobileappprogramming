@@ -12,13 +12,13 @@ import android.view.View
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private var currentUser: User? = null
+    private lateinit var currentUser: User
 
     fun setCurrentUser(user: User) {
         currentUser = user
     }
 
-    fun getCurrentUser(): User? = currentUser
+    fun getCurrentUser(): User = currentUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import com.example.runningapp.MainActivity
 import com.example.runningapp.data.CommunityTag
+import com.example.runningapp.data.User
 import com.example.runningapp.data.storage.CommunityPostStorage
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -16,6 +18,9 @@ import com.example.runningapp.databinding.FragmentWritePostBottomSheetBinding
 class WritePostBottomSheetFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentWritePostBottomSheetBinding? = null
     private val binding get() = _binding!!
+    private val currentUser: User by lazy {
+        (activity as MainActivity).getCurrentUser()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,15 +70,11 @@ class WritePostBottomSheetFragment : BottomSheetDialogFragment() {
     private fun setupSubmitButton() {
         binding.btnSubmit.setOnClickListener {
             val title = binding.editTitle.text.toString()
-            val selectedTag = CommunityTag.valueOf(binding.spinnerTag.selectedItem.toString())
             val content = binding.editContent.text.toString()
-
-            // 현재는 테스트를 위해 임의의 유저 ID 사용 (1~4 중 하나)
-            val currentUserId = 1  // TODO: 나중에 실제 로그인 시스템 구현 시 변경 필요
+            val selectedTag = CommunityTag.valueOf(binding.spinnerTag.selectedItem.toString())
 
             // 입력 검증
             if (title.isBlank() || content.isBlank()) {
-                // 사용자에게 에러 메시지 표시
                 Toast.makeText(requireContext(), "제목과 내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -84,10 +85,10 @@ class WritePostBottomSheetFragment : BottomSheetDialogFragment() {
                 title = title,
                 content = content,
                 tag = selectedTag,
-                userId = currentUserId  // TODO: 현재 로그인한 사용자 ID 가져오기
+                userId = currentUser.id
             )
 
-            // Fragment 갱신 (CommunityFragment의 loadPosts 호출)
+            // Fragment 갱신
             (parentFragment as? CommunityFragment)?.loadPosts()
 
             dismiss()
