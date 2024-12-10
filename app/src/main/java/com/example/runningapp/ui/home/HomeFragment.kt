@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -95,31 +96,37 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         // 버튼 클릭 리스너 설정
         binding.runButton.setOnClickListener {
             if (isRunning) {
-                // 다이얼로그 표시
+                // GPX 파일 이름 입력 다이얼로그 표시
+                val input = EditText(requireContext())
                 AlertDialog.Builder(requireContext())
-                    .setTitle("러닝 중지")
-                    .setMessage("러닝을 중지하시겠습니까?")
-                    .setPositiveButton("예") { _, _ ->
-                        binding.runButton.text = "러닝 시작"
-                        isRunning = false
-                        binding.runInfo.isEnabled = false
-                        handler.removeCallbacks(updateRunnable)
-                        Toast.makeText(requireContext(), "러닝이 중지되었습니다.", Toast.LENGTH_SHORT).show()
+                    .setTitle("경로 저장")
+                    .setMessage("파일 이름을 입력하세요:")
+                    .setView(input)
+                    .setPositiveButton("저장") { _, _ ->
+                        val fileName = input.text.toString()
+                        if (fileName.isNotEmpty()) {
+                            binding.runButton.text = "러닝 시작"
+                            isRunning = false
+                            binding.runInfo.isEnabled = false
+                            handler.removeCallbacks(updateRunnable)
+                            Toast.makeText(requireContext(), "러닝이 중지되었습니다.", Toast.LENGTH_SHORT).show()
 
-                        // GPX 파일 저장 여부를 묻는 팝업창 표시
-                        AlertDialog.Builder(requireContext())
-                            .setTitle("경로 저장")
-                            .setMessage("경로를 GPX 파일로 저장하시겠습니까?")
-                            .setPositiveButton("예") { _, _ ->
-                                saveGpxFile("saved_route.gpx", routePoints)
-                                Toast.makeText(requireContext(), "경로가 저장되었습니다.", Toast.LENGTH_SHORT).show()
-                            }
-                            .setNegativeButton("아니오", null)
-                            .show()
+                            // GPX 파일 저장
+                            saveGpxFile("$fileName.gpx", routePoints)
+                            Toast.makeText(requireContext(), "경로가 저장되었습니다.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(requireContext(), "파일 이름을 입력하세요.", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                    .setNegativeButton("아니오", null)
+                    .setNegativeButton("취소") { _, _ ->
+                        // 일시정지된 업데이트 재개
+                        handler.post(updateRunnable)
+                    }
                     .show()
-            }else {
+
+                // 업데이트 일시정지
+                handler.removeCallbacks(updateRunnable)
+            } else {
                 binding.runButton.text = "러닝 중"
                 naverMap.locationTrackingMode = LocationTrackingMode.Follow
                 isRunning = true
