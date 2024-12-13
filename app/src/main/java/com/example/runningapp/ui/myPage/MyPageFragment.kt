@@ -4,120 +4,86 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.example.runningapp.databinding.FragmentMyPageBinding
-import com.example.runningapp.databinding.ItemMyPageBinding
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
-class runningRecord_item(
-    val title: String,
-    val date: String,
-    val distance: String,
-    val content: String,
-    val img: String
-)
+/*
+ [kt 파일 정리]
+  - MyPageFragment.kt: MyPageFragment 클래스 정의
+    - setupRecyclerView(): 리사이클러뷰 설정
+    - setupTagButtons(): 태그 버튼 설정 (viewpager 이동에 따라 반응)
+    - loadPosts() : 태그에 따라 게시글 변경
+    - onDestroyView(): 뷰가 제거될 때 호출 (default)
+  - MyPageAdpater.kt: 정보 전달 어댑터 정의
+    - MyPageAdapter() : 기본 정보 전달
+    - CrewPostViewHolder() : Crew 정보 전달
+    - CommunityPostViewHolder() : Community 정보 전달
+  - BottomSheetFragment.kt: 아이템 선택 시, 해당 정보를 바인딩하여 표시
 
-class MyViewHolder(val binding: ItemMyPageBinding) :
-    RecyclerView.ViewHolder(binding.root)
-
-class MyAdapter(val datas: MutableList<runningRecord_item>) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    override fun getItemCount(): Int {
-        return datas.size
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
-            RecyclerView.ViewHolder =
-        MyViewHolder(
-            ItemMyPageBinding.inflate(LayoutInflater.from(
-                parent.context), parent, false))
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val binding = (holder as MyViewHolder).binding
-        binding.itemTitle.text = datas[position].title
-        binding.itemDate.text = datas[position].date
-        binding.itemDistanceRun.text = datas[position].distance
-
-        // 아이템 클릭 리스너 추가
-        holder.itemView.setOnClickListener {
-            val bottomSheet = MyPageBottomSheetFragment()
-            bottomSheet.setItemDetails(datas[position].title, "상세 정보") // 필요한 상세 정보를 설정
-
-            // BottomSheet 보여주기
-            bottomSheet.show((holder.itemView.context as AppCompatActivity).supportFragmentManager, bottomSheet.tag)
-        }
-    }
-}
-
-//class MyDecoration(val context: Context): RecyclerView.ItemDecoration() {
-//    override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-//        super.onDrawOver(c, parent, state)
-//        val width = parent.width
-//        val height = parent.height
-//
-//        val dr: Drawable? = ResourcesCompat.getDrawable(context.getResources(),
-//            R.drawable.icon_mypage, null)
-//        val drWidth = dr?.intrinsicWidth
-//        val drHeight = dr?.intrinsicHeight
-//
-//        val left = width / 2 - drWidth?.div(2) as Int
-//        val top = height / 2 - drHeight?.div(2) as Int
-//
-//        c.drawBitmap(
-//            BitmapFactory.decodeResource(context.getResources(), R.drawable.icon_mypage),
-//            left.toFloat(),
-//            top.toFloat(),
-//            null
-//        )
-//
-//    }
-//
-//    override fun getItemOffsets(
-//        outRect: Rect,
-//        view: View,
-//        parent: RecyclerView,
-//        state: RecyclerView.State
-//    ) {
-//        super.getItemOffsets(outRect, view, parent, state)
-//        val index = parent.getChildAdapterPosition(view) + 1
-//        if (index % 3 == 0) // left, top, right, bottom
-//            outRect.set(10, 10, 10, 60)
-//        else
-//            outRect.set(10, 10, 10, 0)
-//        view.setBackgroundColor(Color.parseColor("#28A0FF"))
-//        ViewCompat.setElevation(view, 20.0f)
-//    }
-//}
+  [layout 파일 정리]
+  - fragment_my_page.xml: MyPageFragment 레이아웃 정의
+  - top_info_my_page.xml: 상단 사용자 정보 + tabLayout 정의
+  - bottom_sheet_my_page.xml: 하단 BottomSheetDialog 레이아웃 정의
+  - item_my_page: item 공통 레이아웃 정리
+ */
 
 class MyPageFragment : Fragment() {
+    private var _binding: FragmentMyPageBinding? = null
+    private val binding get() = _binding!!
+    // private val viewModel: MyPageViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = FragmentMyPageBinding.inflate(inflater, container, false)
+        _binding = FragmentMyPageBinding.inflate(inflater, container, false)
 
-        val datas = mutableListOf<runningRecord_item>()
-        //csv에 있는 data로 채우는 작업 필요. 현재 아래는 test용
-         for (i in 1..10) {
-            datas.add(runningRecord_item(
-                "제목 $i",
-                "2024-$i-25",
-                "3.0${i}km",
-                "상세 내용 $i",
-                "res/drawable/ic_launcher_background.xml"))
-        }
-
-        val layoutManager = LinearLayoutManager(activity)
-        binding.mypageRecyclerview.layoutManager = layoutManager
-
-        val adapter = MyAdapter(datas)
-        binding.mypageRecyclerview.adapter = adapter
-//        binding.mypageRecyclerview.addItemDecoration(MyDecoration(activity as Context))
+        setupViewPager()
+        setupRecyclerView()
+        setupTagButtons()
+        // observeViewModel()
 
         return binding.root
+    }
+
+    private fun setupViewPager() {
+        binding.viewPager.adapter = MyPageAdapter(this)
+
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> "Crew Post"
+                1 -> "Community Post"
+                else -> null
+            }
+        }.attach()
+    }
+
+    private fun setupRecyclerView() {
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = MyPageAdapter()
+        }
+    }
+
+    private fun setupTagButtons() {
+        // Implement tag button setup
+    }
+
+//    // 라이프 사이클로 데이터 관찰 후 UI에 자동 반영
+//    private fun observeViewModel() {
+//        viewModel.posts.observe(viewLifecycleOwner, Observer { posts ->
+//            // Update UI with posts
+//        })
+//    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
