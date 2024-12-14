@@ -66,11 +66,6 @@ class CommunityBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null  // 메모리 누수 방지
-    }
-
     fun setItemDetails( // item 저장만 담당
         title: String, 
         content: String, 
@@ -83,5 +78,10 @@ class CommunityBottomSheetFragment : BottomSheetDialogFragment() {
         itemUserImage = userImage
         itemUserName = userName
         itemUserRank = userRank
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null  // 메모리 누수 방지
     }
 }
