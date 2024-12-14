@@ -12,6 +12,13 @@ enum class CommunityTag(val korName: String) {
     override fun toString(): String = korName
 }
 
+enum class MyPageTag(val korName: String) {
+    CREW("크루"),
+    COMMUNITY("커뮤니티");
+
+    override fun toString(): String = korName
+}
+
 enum class UserRank {
     DIAMOND, PLATINUM, GOLD, SILVER, BRONZE
 }
