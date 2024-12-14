@@ -33,6 +33,7 @@ import org.xmlpull.v1.XmlPullParserFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import com.naver.maps.map.overlay.InfoWindow
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -229,6 +230,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
 
         // 여러 개의 GPX 파일을 불러와서 마커 추가
+// 여러 개의 GPX 파일을 불러와서 마커 추가
         val gpxFiles = listOf("test.gpx", "school.gpx", "pretty_university_cross.gpx") // GPX 파일 목록
         for (fileName in gpxFiles) {
             val routePoints = parseGpxFile(fileName)
@@ -237,6 +239,14 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 val marker = Marker()
                 marker.position = startPoint
                 marker.map = naverMap
+
+                // InfoWindow 설정
+                val infoWindow = InfoWindow()
+                infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
+                    override fun getText(infoWindow: InfoWindow): CharSequence {
+                        return fileName.removeSuffix(".gpx")
+                    }
+                }
 
                 // 마커 클릭 리스너 설정
                 marker.setOnClickListener {
@@ -247,10 +257,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                             color = Color.BLUE
                             map = naverMap
                         }
+                        infoWindow.open(marker)
                     } else {
                         // 경로 제거
                         polyline?.map = null
                         polyline = null
+                        infoWindow.close()
                     }
                     true
                 }
