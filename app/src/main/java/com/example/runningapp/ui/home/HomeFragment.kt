@@ -112,7 +112,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                             Toast.makeText(requireContext(), "러닝이 중지되었습니다.", Toast.LENGTH_SHORT).show()
 
                             // GPX 파일 저장
-                            saveGpxFile("$fileName.gpx", routePoints)
+                            saveGpxFile("$fileName.gpx", routePoints, System.currentTimeMillis() - startTime, totalDistance)
                             Toast.makeText(requireContext(), "경로가 저장되었습니다.", Toast.LENGTH_SHORT).show()
                         } else {
                             Toast.makeText(requireContext(), "파일 이름을 입력하세요.", Toast.LENGTH_SHORT).show()
@@ -151,7 +151,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         binding.runInfo.isEnabled = false
     }
 
-    private fun saveGpxFile(fileName: String, points: List<LatLng>) {
+    private fun saveGpxFile(fileName: String, points: List<LatLng>, elapsedTime: Long, totalDistance: Float) {
         try {
             val gpxContent = buildString {
                 append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
@@ -164,11 +164,29 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             }
 
             val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val file = File(downloadDir, fileName)
-            FileOutputStream(file).use {
+            val gpxFile = File(downloadDir, "$fileName.gpx")
+            FileOutputStream(gpxFile).use {
                 it.write(gpxContent.toByteArray())
             }
-            Toast.makeText(requireContext(), "경로가 ${file.absolutePath}에 저장되었습니다.", Toast.LENGTH_SHORT).show()
+
+            val statsContent = buildString {
+                val elapsedTimeInSeconds = elapsedTime / 1000
+                val elapsedTimeInMinutes = elapsedTimeInSeconds / 60
+                val elapsedTimeInHours = elapsedTimeInMinutes / 60
+                val formattedTime = String.format("%02d:%02d:%02d", elapsedTimeInHours, elapsedTimeInMinutes % 60, elapsedTimeInSeconds % 60)
+                val pace = totalDistance / elapsedTimeInSeconds
+
+                append("달린 시간: $formattedTime\n")
+                append("거리: ${totalDistance}m\n")
+                append("페이스: ${String.format("%.1f", pace)} m/s\n")
+            }
+
+            val statsFile = File(downloadDir, "$fileName.txt")
+            FileOutputStream(statsFile).use {
+                it.write(statsContent.toByteArray())
+            }
+
+            Toast.makeText(requireContext(), "경로와 통계가 ${downloadDir.absolutePath}에 저장되었습니다.", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             e.printStackTrace()
             Toast.makeText(requireContext(), "파일 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
