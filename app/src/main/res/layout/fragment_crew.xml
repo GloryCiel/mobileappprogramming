@@ -5,12 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_marginBottom="@dimen/bottom_navigation_height"
-    tools:context=".ui.community.CommunityFragment">
+    tools:context=".ui.crew.CrewFragment"
+    android:layout_marginBottom="@dimen/bottom_navigation_height">
 
     <include
-        android:id="@+id/top_info"
-        layout="@layout/top_info_community"
+        layout="@layout/top_info_crew"
+        android:id="@+id/find_crew_top_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
@@ -19,9 +19,9 @@
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/community_recyclerview"
+            android:id="@+id/findcrew_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_write"
@@ -36,19 +36,4 @@
             app:fabSize="normal"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-    <!-- viewModel 사용법 확인을 위해 남겨둠 -->
-<!--    <TextView-->
-<!--        android:id="@+id/text_community"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="8dp"-->
-<!--        android:layout_marginTop="8dp"-->
-<!--        android:layout_marginEnd="8dp"-->
-<!--        android:textAlignment="center"-->
-<!--        android:textSize="20sp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
 </LinearLayout>

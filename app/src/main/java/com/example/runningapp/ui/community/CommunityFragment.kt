@@ -1,113 +1,92 @@
 package com.example.runningapp.ui.community
 
-import android.content.Context
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.runningapp.R
-import com.example.runningapp.databinding.CommunityItemRecyclerviewBinding
+import com.example.runningapp.data.CommunityTag
+import com.example.runningapp.data.storage.CommunityPostStorage
 import com.example.runningapp.databinding.FragmentCommunityBinding
 
-class MyViewHolder(val binding: CommunityItemRecyclerviewBinding) :
-    RecyclerView.ViewHolder(binding.root)
-
-// 데이터 클래스 추가
-data class CommunityItem(
-    val tag: String,
-    val title: String,
-    val content: String,
-    val userImage: Int,
-    val userName: String,
-    val userRank: String
-)
-
-class MyAdapter(val datas: MutableList<CommunityItem>) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    override fun getItemCount(): Int {
-        return datas.size
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
-            RecyclerView.ViewHolder =
-        MyViewHolder(
-            CommunityItemRecyclerviewBinding.inflate(LayoutInflater.from(
-                parent.context), parent, false))
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val binding = (holder as MyViewHolder).binding
-        val item = datas[position]
-        
-        // 각 뷰에 데이터 바인딩
-        binding.itemTag.text = item.tag
-        binding.itemTitle.text = item.title
-        binding.itemContent.text = item.content
-
-        // 아이템 클릭 리스너
-        holder.itemView.setOnClickListener {
-            val bottomSheet = CommunityBottomSheetFragment()
-            bottomSheet.setItemDetails(
-                title = item.title,
-                content = item.content,
-                userImage = item.userImage,
-                userName = item.userName,
-                userRank = item.userRank
-            )
-            bottomSheet.show((holder.itemView.context as AppCompatActivity).supportFragmentManager, bottomSheet.tag)
-        }
-    }
-}
 
 class CommunityFragment : Fragment() {
+    private var _binding: FragmentCommunityBinding? = null
+    private val binding get() = _binding!!
+    private val adapter = CommunityAdapter()
+    private var currentTag = CommunityTag.ALL
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _binding = FragmentCommunityBinding.inflate(inflater, container, false)
 
-        val binding = FragmentCommunityBinding.inflate(inflater, container, false)
-
-        // Toolbar 숨기기
-        (activity as? AppCompatActivity)?.supportActionBar?.hide()
-
-        val datas = mutableListOf<CommunityItem>()
-        for (i in 1..10) {
-            datas.add(CommunityItem(
-                tag = "#태그${i}",
-                title = "제목 ${i}",
-                content = "게시글 내용 ${i}입니다. 여기에 더 많은 내용이 들어갈 수 있습니다. 다음은 긴 글에 대한 테스트입니다. item_recycle에 ... 이 보이면 됩니다.",
-                userImage = R.drawable.icon_community,
-                userName = "사용자${i}",
-                userRank = "초보 러너"
-            ))
-        }
-
-        val layoutManager = LinearLayoutManager(activity)
-        binding.communityRecyclerview.layoutManager = layoutManager
-
-        val adapter = MyAdapter(datas)
-        binding.communityRecyclerview.adapter = adapter
-
-        // viewModel 사용법 확인을 위해 남겨둠 (지우지 마세요)
-//        val communityViewModel =
-//            ViewModelProvider(this).get(CommunityViewModel::class.java)
-//        val textView: TextView = binding.textCommunity
-//        communityViewModel.text.observe(viewLifecycleOwner) {
-//            textView.text = it
-//        }
+        setupRecyclerView()
+        setupTagButtons()
+        loadPosts()
+        setupFab()
 
         return binding.root
+    }
+
+    private fun setupRecyclerView() {
+        binding.communityRecyclerview.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = this@CommunityFragment.adapter
+            setHasFixedSize(true)
+        }
+    }
+
+    private fun setupTagButtons() {
+        binding.topInfo.apply {
+            tagAll.setOnClickListener { filterByTag(CommunityTag.ALL) }
+            tag1.setOnClickListener { filterByTag(CommunityTag.TAG1) }
+            tag2.setOnClickListener { filterByTag(CommunityTag.TAG2) }
+            tag3.setOnClickListener { filterByTag(CommunityTag.TAG3) }
+            tag4.setOnClickListener { filterByTag(CommunityTag.TAG4) }
+            tag5.setOnClickListener { filterByTag(CommunityTag.TAG5) }
+        }
+
+        binding.topInfo.apply {
+            tagAll.text = CommunityTag.ALL.korName
+            tag1.text = CommunityTag.TAG1.korName
+            tag2.text = CommunityTag.TAG2.korName
+            tag3.text = CommunityTag.TAG3.korName
+            tag4.text = CommunityTag.TAG4.korName
+            tag5.text = CommunityTag.TAG5.korName
+        }
+    }
+
+    private fun filterByTag(tag: CommunityTag) {
+        currentTag = tag
+        loadPosts()
+    }
+
+    internal fun loadPosts() {
+        val allPosts = CommunityPostStorage.loadPosts(requireContext())
+        val filteredPosts = when (currentTag) {
+            CommunityTag.ALL -> allPosts
+            else -> allPosts.filter { it.tag == currentTag }
+        }
+        adapter.submitList(filteredPosts) {
+            binding.communityRecyclerview.scrollToPosition(0)
+        }
+    }
+
+    private fun setupFab() {
+        binding.fabWrite.setOnClickListener {
+            WritePostBottomSheetFragment().show(
+                childFragmentManager,
+                "WritePostBottomSheet"
+            )
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

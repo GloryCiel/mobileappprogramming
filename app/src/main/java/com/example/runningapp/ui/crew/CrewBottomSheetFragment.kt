@@ -1,23 +1,23 @@
-package com.example.runningapp.ui.community
+package com.example.runningapp.ui.crew
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.Glide
-import com.example.runningapp.databinding.BottomSheetCommunityBinding
+import com.example.runningapp.databinding.BottomSheetCrewBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class CommunityBottomSheetFragment : BottomSheetDialogFragment() {
+class CrewBottomSheetFragment : BottomSheetDialogFragment() {
 
-    private var _binding: BottomSheetCommunityBinding? = null
+    private var _binding: BottomSheetCrewBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var itemTitle: String
+    private lateinit var itemLocation: String
     private lateinit var itemContent: String
-    private lateinit var itemUserImage: String
+    private var itemUserImage: Int = 0
     private lateinit var itemUserName: String
     private lateinit var itemUserRank: String
 
@@ -25,22 +25,20 @@ class CommunityBottomSheetFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = BottomSheetCommunityBinding.inflate(inflater, container, false)
+        _binding = BottomSheetCrewBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 데이터 바인딩
+        // 데이터 표시 (바인딩 사용)
         binding.title.text = itemTitle
         binding.content.text = itemContent
+        binding.location.text = itemLocation
+        binding.userImage.setImageResource(itemUserImage)
         binding.userName.text = itemUserName
         binding.userRank.text = itemUserRank
-        Glide.with(this)    // 여기는 이미지 지정
-            .load(itemUserImage)
-            .circleCrop()
-            .into(binding.userImage)  // BottomSheet의 이미지뷰 ID
 
         // BottomSheet의 최소 높이 설정
         val displayMetrics = resources.displayMetrics
@@ -66,22 +64,24 @@ class CommunityBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
-    fun setItemDetails( // item 저장만 담당
-        title: String, 
-        content: String, 
-        userImage: String,
-        userName: String, 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null  // 메모리 누수 방지
+    }
+
+    fun setItemDetails(
+        title: String,
+        location: String,
+        content: String,
+        userImage: Int,
+        userName: String,
         userRank: String
     ) {
         itemTitle = title
+        itemLocation = location
         itemContent = content
         itemUserImage = userImage
         itemUserName = userName
         itemUserRank = userRank
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null  // 메모리 누수 방지
     }
 }

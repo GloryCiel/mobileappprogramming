@@ -38,20 +38,29 @@
                 android:textColor="@android:color/black" />
 
             <TextView
+                android:id="@+id/tag1"
                 style="@style/CommunityTag"
                 android:text="tag1" />
 
             <TextView
+                android:id="@+id/tag2"
                 style="@style/CommunityTag"
                 android:text="tag2" />
 
             <TextView
+                android:id="@+id/tag3"
                 style="@style/CommunityTag"
                 android:text="tag3" />
 
             <TextView
+                android:id="@+id/tag4"
                 style="@style/CommunityTag"
                 android:text="tag4" />
+
+            <TextView
+                android:id="@+id/tag5"
+                style="@style/CommunityTag"
+                android:text="tag5" />
         </LinearLayout>
     </HorizontalScrollView>
 </LinearLayout>

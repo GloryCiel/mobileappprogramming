@@ -7,7 +7,7 @@
     android:layout_marginHorizontal="18dp"
     android:layout_marginVertical="10dp"
     android:padding="16dp"
-    android:background="@drawable/community_item">
+    android:background="@drawable/post_item_background">
 
     <!-- 좌측 내용 영역 -->
     <LinearLayout
