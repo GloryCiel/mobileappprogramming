@@ -1,5 +1,6 @@
 package com.example.runningapp.ui.myPage
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -52,18 +53,18 @@ class MyPageFragment : Fragment() {
             .into(binding.topInfo.userProfile)  // 반영할 이미지뷰 ID
     }
 
-        private fun setupRecyclerView() {
-            binding.myPageRecyclerview.apply {
-                layoutManager = LinearLayoutManager(context)
-                // 기본적으로 RUNNING 태그에 대해 runningAdapter를 사용하고, 현재 태그에 따라 어댑터를 설정
-                adapter = when (currentTag) {
-                    MyPageTag.RUNNING -> runningAdapter
-                    MyPageTag.CREW -> crewAdapter
-                    MyPageTag.COMMUNITY -> communityAdapter
-                }
-                setHasFixedSize(true)
+    private fun setupRecyclerView() {
+        binding.myPageRecyclerview.apply {
+            layoutManager = LinearLayoutManager(context)
+            // 기본적으로 RUNNING 태그에 대해 runningAdapter를 사용하고, 현재 태그에 따라 어댑터를 설정
+            adapter = when (currentTag) {
+                MyPageTag.RUNNING -> runningAdapter
+                MyPageTag.CREW -> crewAdapter
+                MyPageTag.COMMUNITY -> communityAdapter
             }
+            setHasFixedSize(true)
         }
+    }
 
     private fun setupTagButtons() {
         binding.tagRunning.apply {
@@ -89,12 +90,19 @@ class MyPageFragment : Fragment() {
             }
             text = MyPageTag.COMMUNITY.korName
         }
+
+        // 초기 러닝 기록 Style 설정
+        binding.tagRunning.apply {
+            setTextColor(resources.getColor(android.R.color.black, null))
+            setTypeface(null, android.graphics.Typeface.BOLD)
+        }
     }
 
     private fun filterByTag(tag: MyPageTag) {
         currentTag = tag
         setupRecyclerView()
         loadPosts()
+        updateTagButtonStyles(currentTag)
     }
 
     internal fun loadPosts() {
@@ -130,6 +138,23 @@ class MyPageFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    private fun updateTagButtonStyles(selectedTag: MyPageTag) {
+        val defaultColor = resources.getColor(android.R.color.darker_gray, null)
+        val selectedColor = resources.getColor(android.R.color.black, null)
+
+        val tagButtons = mapOf(
+            MyPageTag.RUNNING to binding.tagRunning,
+            MyPageTag.CREW to binding.tagCrew,
+            MyPageTag.COMMUNITY to binding.tagCommunity
+        )
+
+        tagButtons.forEach { (tag, textView) ->
+            val isSelected = (tag == selectedTag) // 선택된 태그만 적용
+            textView.setTextColor(if (isSelected) selectedColor else defaultColor)
+            textView.setTypeface(null, if (isSelected) Typeface.BOLD else Typeface.NORMAL)
         }
     }
 

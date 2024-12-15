@@ -1,9 +1,12 @@
 package com.example.runningapp.ui.community
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.runningapp.data.CommunityTag
@@ -58,11 +61,18 @@ class CommunityFragment : Fragment() {
             tag4.text = CommunityTag.TAG4.korName
             tag5.text = CommunityTag.TAG5.korName
         }
+
+        // 초기 All Style 설정
+        binding.topInfo.apply {
+            tagAll.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+            tagAll.setTypeface(null, Typeface.BOLD)
+        }
     }
 
     private fun filterByTag(tag: CommunityTag) {
         currentTag = tag
         loadPosts()
+        updateTagButtonStyles(currentTag)
     }
 
     internal fun loadPosts() {
@@ -73,6 +83,28 @@ class CommunityFragment : Fragment() {
         }
         adapter.submitList(filteredPosts) {
             binding.communityRecyclerview.scrollToPosition(0)
+        }
+    }
+
+    private fun updateTagButtonStyles(selectedTag: CommunityTag) {
+        binding.topInfo.apply {
+            val defaultColor = ContextCompat.getColor(requireContext(), android.R.color.darker_gray)
+            val selectedColor = ContextCompat.getColor(requireContext(), android.R.color.black)
+
+            val tagButtons = mapOf(
+                CommunityTag.ALL to tagAll,
+                CommunityTag.TAG1 to tag1,
+                CommunityTag.TAG2 to tag2,
+                CommunityTag.TAG3 to tag3,
+                CommunityTag.TAG4 to tag4,
+                CommunityTag.TAG5 to tag5
+            )
+
+            tagButtons.forEach { (tag, textView) ->
+                val isSelected = (tag == selectedTag) // 선택된 태그만 적용
+                textView.setTextColor(if (isSelected) selectedColor else defaultColor)
+                textView.setTypeface(null, if (isSelected) Typeface.BOLD else Typeface.NORMAL) // 기본 글꼴 지정
+            }
         }
     }
 
