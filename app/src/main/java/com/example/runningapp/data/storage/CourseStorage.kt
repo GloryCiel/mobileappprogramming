@@ -23,8 +23,8 @@ object CourseStorage : BaseStorage() {
         context: Context,
         title: String,
         distance: Float,
-        description: String,
-        gpxFilePath: String,
+        description: String,    // gpx.txt 경로
+        gpxFilePath: String,    // gpx.gpx 경로
         userId: Int,
         courseImagePath: String? = null,
         isPublic: Boolean = true

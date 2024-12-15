@@ -16,8 +16,8 @@ data class Course(
     val date: Long = System.currentTimeMillis(),
     val distance: Float,
     val courseImagePath: String = "file:///android_asset/default/defaultCourse.png",
-    val description: String,
-    val gpxFilePath: String,
+    val description: String,    // gpx.txt 경로
+    val gpxFilePath: String,    // gpx.gpx 경로
     val userId: Int,
     val isPublic: Boolean = true
 )
