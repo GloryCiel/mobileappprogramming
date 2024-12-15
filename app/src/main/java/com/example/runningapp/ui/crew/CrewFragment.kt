@@ -1,6 +1,5 @@
 package com.example.runningapp.ui.crew
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,30 +11,16 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.runningapp.R
-import com.example.runningapp.databinding.ItemCrewBinding
 import com.example.runningapp.databinding.FragmentCrewBinding
-
-class find_crew_item(
-    val title:String,
-    val content:String,
-    val date:String,
-    val img:String,
-    val location:String
-)
-
-fun getLocations(context: Context): Array<String> {
-    return context.resources.getStringArray(R.array.location_list)
-}
-
-
+import com.example.runningapp.databinding.ItemCrewBinding
 
 class MyViewHolder(val binding: ItemCrewBinding) :
     RecyclerView.ViewHolder(binding.root)
 
-class MyAdapter(val datas: MutableList<find_crew_item>) :
+class MyAdapter(val datas: MutableList<FindCrewItem>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-        private var filterdList:MutableList<find_crew_item> = datas
+        private var filterdList:MutableList<FindCrewItem> = datas
 
     override fun getItemCount(): Int {
         return filterdList.size
@@ -49,15 +34,22 @@ class MyAdapter(val datas: MutableList<find_crew_item>) :
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding = (holder as MyViewHolder).binding
-        binding.itemTitle.text = filterdList[position].title
-        binding.itemDate.text = filterdList[position].date
-        binding.itemContent.text = filterdList[position].content
-        binding.itemLocation.text = filterdList[position].location
+        val item = filterdList[position]
+        binding.itemTitle.text = item.title
+        binding.itemDate.text = item.date
+        binding.itemContent.text = item.content
+        binding.itemLocation.text = item.location
+        binding.itemImage.setImageResource(item.userImage)
 
         // 아이템 클릭 리스너 추가
         holder.itemView.setOnClickListener {
             val bottomSheet = CrewBottomSheetFragment()
-            bottomSheet.setItemDetails(filterdList[position].title, "상세 정보") // 필요한 상세 정보를 설정
+            bottomSheet.setItemDetails(title = item.title,
+                location = item.location,
+                content = item.content,
+                userImage = item.userImage,
+                userName = item.userName,
+                userRank = item.userRank) // 필요한 상세 정보를 설정
 
             // BottomSheet 보여주기
             bottomSheet.show((holder.itemView.context as AppCompatActivity).supportFragmentManager, bottomSheet.tag)
@@ -81,46 +73,52 @@ class CrewFragment : Fragment() {
     ): View {
         val binding = FragmentCrewBinding.inflate(inflater, container, false)
 
-        val datas = mutableListOf<find_crew_item>()
+        // Toolbar 숨기기
+        (activity as? AppCompatActivity)?.supportActionBar?.hide()
+
+        val datas = mutableListOf<FindCrewItem>()
         for (i in 1..10) {
             datas.add(
-                find_crew_item(
-                "제목 $i",
-                "상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용",
-                "2024-$i-26",
-                "res/drawable/ic_launcher_background.xml",
-                "수성구")
+                FindCrewItem(
+                title = "제목 $i",
+                content = "상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용",
+                date = "2024-$i-26",
+                userImage = R.drawable.icon_crew,
+                userName = "사용자$i",
+                userRank = "초보 러너",
+                location = "수성구")
             )
-            datas.add(
-                find_crew_item(
-                "$i 제목",
-                "상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용",
-                "2024-$i-26",
-                "res/drawable/ic_launcher_background.xml",
-                "중구")
+            datas.add(FindCrewItem(
+                title = "제목 $i",
+                content = "상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용상세내용",
+                date = "2024-$i-26",
+                userImage = R.drawable.icon_crew,
+                userName = "사용자$i",
+                userRank = "초보 러너",
+                location = "중구")
             )
         }
 
-        val locations = getLocations(requireContext())
+        val locations = FindCrewTags.locations.toMutableList()
         val spinneradapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, locations)
-        binding.selectLocation.adapter = spinneradapter
+        binding.findCrewTopInfo.selectLocation.adapter = spinneradapter
 
-        binding.selectLocation.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        binding.findCrewTopInfo.selectLocation.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val selectedLocation = locations[position]
-                (binding.crewRecyclerview.adapter as? MyAdapter)?.filterData(selectedLocation)
+                (binding.findcrewRecyclerview.adapter as? MyAdapter)?.filterData(selectedLocation)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                (binding.crewRecyclerview.adapter as? MyAdapter)?.filterData("")
+                (binding.findcrewRecyclerview.adapter as? MyAdapter)?.filterData("")
             }
         }
 
         val layoutManager = LinearLayoutManager(activity)
-        binding.crewRecyclerview.layoutManager = layoutManager
+        binding.findcrewRecyclerview.layoutManager = layoutManager
 
         val adapter = MyAdapter(datas)
-        binding.crewRecyclerview.adapter = adapter
+        binding.findcrewRecyclerview.adapter = adapter
 
         return binding.root
     }
