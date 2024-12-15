@@ -4,12 +4,14 @@ import android.app.AlertDialog
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -19,19 +21,22 @@ import com.example.runningapp.R
 import com.example.runningapp.databinding.FragmentHomeBinding
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
-import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapSdk
+import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.PolylineOverlay
 import com.naver.maps.map.util.FusedLocationSource
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
-import java.io.InputStream
-import android.os.Environment
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
+import com.naver.maps.map.overlay.InfoWindow
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -94,32 +99,40 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         // 버튼 클릭 리스너 설정
         binding.runButton.setOnClickListener {
             if (isRunning) {
-                // 다이얼로그 표시
+                // GPX 파일 이름 입력 다이얼로그 표시
+                val input = EditText(requireContext())
                 AlertDialog.Builder(requireContext())
-                    .setTitle("러닝 중지")
-                    .setMessage("러닝을 중지하시겠습니까?")
-                    .setPositiveButton("예") { _, _ ->
+                    .setTitle("경로 저장")
+                    .setMessage("파일 이름을 입력하세요:")
+                    .setView(input)
+                    .setPositiveButton("저장") { _, _ ->
+                        var fileName = input.text.toString()
+                        if (fileName.isEmpty()) {
+                            val sdf = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+                            fileName = sdf.format(Date())
+                        }
+                        fileName += ".gpx"
                         binding.runButton.text = "러닝 시작"
                         isRunning = false
                         binding.runInfo.isEnabled = false
                         handler.removeCallbacks(updateRunnable)
                         Toast.makeText(requireContext(), "러닝이 중지되었습니다.", Toast.LENGTH_SHORT).show()
 
-                        // GPX 파일 저장 여부를 묻는 팝업창 표시
-                        AlertDialog.Builder(requireContext())
-                            .setTitle("경로 저장")
-                            .setMessage("경로를 GPX 파일로 저장하시겠습니까?")
-                            .setPositiveButton("예") { _, _ ->
-                                saveGpxFile("saved_route.gpx", routePoints)
-                                Toast.makeText(requireContext(), "경로가 저장되었습니다.", Toast.LENGTH_SHORT).show()
-                            }
-                            .setNegativeButton("아니오", null)
-                            .show()
+                        // GPX 파일 저장
+                        saveGpxFile(fileName, routePoints, System.currentTimeMillis() - startTime, totalDistance)
+                        Toast.makeText(requireContext(), "경로가 저장되었습니다.", Toast.LENGTH_SHORT).show()
                     }
-                    .setNegativeButton("아니오", null)
+                    .setNegativeButton("취소") { _, _ ->
+                        // 일시정지된 업데이트 재개
+                        handler.post(updateRunnable)
+                    }
                     .show()
-            }else {
+
+                // 업데이트 일시정지
+                handler.removeCallbacks(updateRunnable)
+            } else {
                 binding.runButton.text = "러닝 중"
+                naverMap.locationTrackingMode = LocationTrackingMode.Follow
                 isRunning = true
                 startTime = System.currentTimeMillis()
                 totalDistance = 0f
@@ -142,7 +155,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         binding.runInfo.isEnabled = false
     }
 
-    private fun saveGpxFile(fileName: String, points: List<LatLng>) {
+    private fun saveGpxFile(fileName: String, points: List<LatLng>, elapsedTime: Long, totalDistance: Float) {
         try {
             val gpxContent = buildString {
                 append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
@@ -155,11 +168,29 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             }
 
             val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val file = File(downloadDir, fileName)
-            FileOutputStream(file).use {
+            val gpxFile = File(downloadDir, "$fileName.gpx")
+            FileOutputStream(gpxFile).use {
                 it.write(gpxContent.toByteArray())
             }
-            Toast.makeText(requireContext(), "경로가 ${file.absolutePath}에 저장되었습니다.", Toast.LENGTH_SHORT).show()
+
+            val statsContent = buildString {
+                val elapsedTimeInSeconds = elapsedTime / 1000
+                val elapsedTimeInMinutes = elapsedTimeInSeconds / 60
+                val elapsedTimeInHours = elapsedTimeInMinutes / 60
+                val formattedTime = String.format("%02d:%02d:%02d", elapsedTimeInHours, elapsedTimeInMinutes % 60, elapsedTimeInSeconds % 60)
+                val pace = totalDistance / elapsedTimeInSeconds
+
+                append("달린 시간: $formattedTime\n")
+                append("거리: ${totalDistance}m\n")
+                append("페이스: ${String.format("%.1f", pace)} m/s\n")
+            }
+
+            val statsFile = File(downloadDir, "$fileName.txt")
+            FileOutputStream(statsFile).use {
+                it.write(statsContent.toByteArray())
+            }
+
+            Toast.makeText(requireContext(), "경로와 통계가 ${downloadDir.absolutePath}에 저장되었습니다.", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             e.printStackTrace()
             Toast.makeText(requireContext(), "파일 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
@@ -211,6 +242,14 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 marker.position = startPoint
                 marker.map = naverMap
 
+                // InfoWindow 설정
+                val infoWindow = InfoWindow()
+                infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
+                    override fun getText(infoWindow: InfoWindow): CharSequence {
+                        return fileName.removeSuffix(".gpx")
+                    }
+                }
+
                 // 마커 클릭 리스너 설정
                 marker.setOnClickListener {
                     if (polyline == null) {
@@ -220,10 +259,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                             color = Color.BLUE
                             map = naverMap
                         }
+                        infoWindow.open(marker)
                     } else {
                         // 경로 제거
                         polyline?.map = null
                         polyline = null
+                        infoWindow.close()
                     }
                     true
                 }
