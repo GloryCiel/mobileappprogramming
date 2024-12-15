@@ -34,6 +34,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import com.naver.maps.map.overlay.InfoWindow
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -104,20 +107,21 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                     .setMessage("파일 이름을 입력하세요:")
                     .setView(input)
                     .setPositiveButton("저장") { _, _ ->
-                        val fileName = input.text.toString()
-                        if (fileName.isNotEmpty()) {
-                            binding.runButton.text = "러닝 시작"
-                            isRunning = false
-                            binding.runInfo.isEnabled = false
-                            handler.removeCallbacks(updateRunnable)
-                            Toast.makeText(requireContext(), "러닝이 중지되었습니다.", Toast.LENGTH_SHORT).show()
-
-                            // GPX 파일 저장
-                            saveGpxFile("$fileName.gpx", routePoints, System.currentTimeMillis() - startTime, totalDistance)
-                            Toast.makeText(requireContext(), "경로가 저장되었습니다.", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(requireContext(), "파일 이름을 입력하세요.", Toast.LENGTH_SHORT).show()
+                        var fileName = input.text.toString()
+                        if (fileName.isEmpty()) {
+                            val sdf = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+                            fileName = sdf.format(Date())
                         }
+                        fileName += ".gpx"
+                        binding.runButton.text = "러닝 시작"
+                        isRunning = false
+                        binding.runInfo.isEnabled = false
+                        handler.removeCallbacks(updateRunnable)
+                        Toast.makeText(requireContext(), "러닝이 중지되었습니다.", Toast.LENGTH_SHORT).show()
+
+                        // GPX 파일 저장
+                        saveGpxFile(fileName, routePoints, System.currentTimeMillis() - startTime, totalDistance)
+                        Toast.makeText(requireContext(), "경로가 저장되었습니다.", Toast.LENGTH_SHORT).show()
                     }
                     .setNegativeButton("취소") { _, _ ->
                         // 일시정지된 업데이트 재개
@@ -230,7 +234,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
 
         // 여러 개의 GPX 파일을 불러와서 마커 추가
-// 여러 개의 GPX 파일을 불러와서 마커 추가
         val gpxFiles = listOf("test.gpx", "school.gpx", "pretty_university_cross.gpx") // GPX 파일 목록
         for (fileName in gpxFiles) {
             val routePoints = parseGpxFile(fileName)
