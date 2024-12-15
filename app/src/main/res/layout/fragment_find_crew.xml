@@ -9,25 +9,31 @@
     android:layout_marginBottom="@dimen/bottom_navigation_height">
 
     <include
-        layout="@layout/my_page_top_info"
+        layout="@layout/find_crew_top_info"
+        android:id="@+id/find_crew_top_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <Spinner
-        android:id="@+id/select_location"
-        android:layout_width="392dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginVertical="5dp"
-        android:layout_margin="10dp"
-        android:layout_weight="1"
-        android:textColor="#000000"
-        android:textSize="20dp" />
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/findcrew_recyclerview"
-        android:layout_width="392dp"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="10dp"
-        android:layout_weight="20" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/findcrew_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_write"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:src="@drawable/icon_write"
+            android:backgroundTint="#FFD9D9D9"
+            app:backgroundTint="#FFD9D9D9"
+            app:maxImageSize="30dp"
+            app:fabSize="normal"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </LinearLayout>

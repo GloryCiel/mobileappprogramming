@@ -5,29 +5,25 @@
     android:layout_height="@dimen/top_info_height"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#949494">
+    android:background="#FFFFFF">
 
     <TextView
-        android:id="@+id/text_name"
+        android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="이름"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="12dp"
+        android:text="크루 찾기"
+        android:textColor="@android:color/black"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/text_grade"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="등급: A"
-        android:textSize="16sp"
-        android:layout_marginBottom="4dp"/>
+    <Spinner
+        android:id="@+id/select_location"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_gravity="center_vertical"
+        android:textColor="#000000"
+        android:textSize="20dp" />
 
-    <TextView
-        android:id="@+id/text_preferred_area"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="선호 지역: 서울"
-        android:textSize="16sp"/>
 </LinearLayout>
