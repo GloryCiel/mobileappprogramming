@@ -15,6 +15,7 @@ import com.example.runningapp.data.storage.CrewPostStorage
 import com.example.runningapp.data.storage.CrewPostStorage.loadPosts
 import com.example.runningapp.databinding.FragmentCrewBinding
 import com.example.runningapp.databinding.ItemCrewBinding
+import com.example.runningapp.ui.community.WritePostBottomSheetFragment
 
 class CrewFragment : Fragment() {
     private var _binding: FragmentCrewBinding? = null
@@ -32,6 +33,7 @@ class CrewFragment : Fragment() {
         // Toolbar 숨기기
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
+        setupFab()
         setupRecyclerView()
         setupLocationSpinner()
         filterByLocation() // loadPosts() 대신 filterByLocation() 호출
@@ -57,7 +59,7 @@ class CrewFragment : Fragment() {
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     currentLocation = locations[position]
-                    filterByLocation()
+                    filterByLocation(currentLocation)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -68,7 +70,7 @@ class CrewFragment : Fragment() {
         }
     }
 
-    private fun filterByLocation() {
+    internal fun filterByLocation(currentLocation: String = "") {
         val allPosts = CrewPostStorage.loadPosts(requireContext())
         val filteredPosts = if (currentLocation.isEmpty()) {
             allPosts
@@ -78,6 +80,15 @@ class CrewFragment : Fragment() {
             }
         }
         adapter.submitList(filteredPosts)
+    }
+
+    private fun setupFab() {
+        binding.fabWrite.setOnClickListener {
+            CrewWritePostBottomSheetFragment().show(
+                childFragmentManager,
+                "CrewWritePostBottomSheet"
+            )
+        }
     }
 
     override fun onDestroyView() {
