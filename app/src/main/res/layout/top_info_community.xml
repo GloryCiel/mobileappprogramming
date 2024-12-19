@@ -33,9 +33,7 @@
             <TextView
                 android:id="@+id/tagAll"
                 style="@style/CommunityTag"
-                android:text="All"
-                android:textStyle="bold"
-                android:textColor="@android:color/black" />
+                android:text="All" />
 
             <TextView
                 android:id="@+id/tag1"
