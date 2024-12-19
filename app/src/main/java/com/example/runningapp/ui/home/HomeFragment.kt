@@ -246,7 +246,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
 
         // 여러 개의 GPX 파일을 불러와서 마커 추가
-        val gpxFiles = listOf("test.gpx", "school.gpx", "pretty_university_cross.gpx") // GPX 파일 목록
+        val gpxFiles = listOf("school_trip.gpx", "haksanpark.gpx", "duryupark.gpx","apsanpark.gpx") // GPX 파일 목록
         for (fileName in gpxFiles) {
             val routePoints = parseGpxFile(fileName)
             if (routePoints.isNotEmpty()) {
