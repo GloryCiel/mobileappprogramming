@@ -1,6 +1,7 @@
 package com.example.runningapp.ui.community
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -71,13 +72,15 @@ class WritePostBottomSheetFragment : BottomSheetDialogFragment() {
         binding.btnSubmit.setOnClickListener {
             val title = binding.editTitle.text.toString()
             val content = binding.editContent.text.toString()
-            val selectedTag = CommunityTag.valueOf(binding.spinnerTag.selectedItem.toString())
+            val selectedKorName = binding.spinnerTag.selectedItem.toString()
+            val selectedTag = CommunityTag.fromKorName(selectedKorName)
 
-            // 입력 검증
-            if (title.isBlank() || content.isBlank()) {
-                Toast.makeText(requireContext(), "제목과 내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            if (selectedTag == null) {
+                Toast.makeText(requireContext(), "잘못된 태그가 선택되었습니다.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
+            Log.d("debug", "title: $title, content: $content, tag: $selectedTag")
 
             // Storage에 게시글 저장
             CommunityPostStorage.addPost(

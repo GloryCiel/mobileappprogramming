@@ -5,11 +5,17 @@ enum class CommunityTag(val korName: String) {
     TAG1("공지사항"),
     TAG2("질문"),
     TAG3("정보공유"),
-    TAG4("태그1"),
-    TAG5("태그2"),
-    TAG6("태그3");
+    TAG4("코스추천"),
+    TAG5("오운완"),
+    TAG6("자랑글");
 
     override fun toString(): String = korName
+
+    companion object {
+        fun fromKorName(korName: String): CommunityTag? {
+            return values().find { it.korName == korName }
+        }
+    }
 }
 
 enum class MyPageTag(val korName: String) {
