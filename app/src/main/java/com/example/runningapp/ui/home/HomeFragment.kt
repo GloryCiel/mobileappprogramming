@@ -155,10 +155,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-        binding.moreInfo.setOnClickListener {
-            Toast.makeText(requireContext(), "More Info Clicked", Toast.LENGTH_SHORT).show()
-        }
-
         binding.runInfo.isEnabled = false
     }
 

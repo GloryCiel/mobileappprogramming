@@ -29,16 +29,6 @@
             android:text="Loc" />
 
         <Button
-            android:id="@+id/more_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="64dp"
-            android:text="more Info" />
-
-        <Button
             android:id="@+id/run_info"
             android:layout_width="260dp"
             android:layout_height="92dp"
