@@ -13,6 +13,7 @@ enum class CommunityTag(val korName: String) {
 }
 
 enum class MyPageTag(val korName: String) {
+    RUNNING("러닝 코스"),
     CREW("크루"),
     COMMUNITY("커뮤니티");
 

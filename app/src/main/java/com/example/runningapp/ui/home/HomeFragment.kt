@@ -17,7 +17,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.runningapp.BuildConfig
+import com.example.runningapp.MainActivity
 import com.example.runningapp.R
+import com.example.runningapp.data.User
+import com.example.runningapp.data.storage.CourseStorage
 import com.example.runningapp.databinding.FragmentHomeBinding
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
@@ -53,6 +56,10 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private var lastLocation: Location? = null
     private var routePoints = mutableListOf<LatLng>()
     private var polyline: PolylineOverlay? = null
+
+    private val currentUser: User by lazy { // 메인에 설정된 이후 로드
+        (activity as MainActivity).getCurrentUser()
+    }
 
     private val handler = Handler(Looper.getMainLooper())
     private val updateRunnable = object : Runnable {
@@ -148,10 +155,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-        binding.moreInfo.setOnClickListener {
-            Toast.makeText(requireContext(), "More Info Clicked", Toast.LENGTH_SHORT).show()
-        }
-
         binding.runInfo.isEnabled = false
     }
 
@@ -189,6 +192,16 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             FileOutputStream(statsFile).use {
                 it.write(statsContent.toByteArray())
             }
+
+            // CourseStorage에 코스 추가
+            CourseStorage.addCourse(
+                context = requireContext(),
+                title = fileName.removeSuffix(".gpx"),
+                distance = totalDistance,
+                description = statsFile.absolutePath,
+                gpxFilePath = gpxFile.absolutePath,
+                userId = currentUser.id // currentUserId는 현재 사용자의 ID로 대체해야 합니다.
+            )
 
             Toast.makeText(requireContext(), "경로와 통계가 ${downloadDir.absolutePath}에 저장되었습니다.", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
@@ -233,7 +246,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
 
         // 여러 개의 GPX 파일을 불러와서 마커 추가
-        val gpxFiles = listOf("test.gpx", "school.gpx", "pretty_university_cross.gpx") // GPX 파일 목록
+        val gpxFiles = listOf("school_trip.gpx", "haksanpark.gpx", "duryupark.gpx","apsanpark.gpx") // GPX 파일 목록
         for (fileName in gpxFiles) {
             val routePoints = parseGpxFile(fileName)
             if (routePoints.isNotEmpty()) {

@@ -17,21 +17,26 @@
     <!-- 태그 컨테이너 -->
     <LinearLayout
         android:id="@+id/tagContainer"
-        android:layout_width="300dp"
+        android:layout_width="360dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/tag_container_border"
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/tag_running"
+            style="@style/MyPageTag"
+            android:text="러닝 기록" />
+
+        <TextView
             android:id="@+id/tag_crew"
-            style="@style/CommunityTag"
-            android:text="Crew" />
+            style="@style/MyPageTag"
+            android:text="크루" />
 
         <TextView
             android:id="@+id/tag_community"
-            style="@style/CommunityTag"
-            android:text="Community" />
+            style="@style/MyPageTag"
+            android:text="커뮤니티" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
