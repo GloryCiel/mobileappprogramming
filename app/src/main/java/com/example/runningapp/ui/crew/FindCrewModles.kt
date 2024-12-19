@@ -1,6 +1,6 @@
 package com.example.runningapp.ui.crew
 
-data class FindCrewItem(
+data class CrewPost(
     val title: String,
     val date: String,
     val location: String,

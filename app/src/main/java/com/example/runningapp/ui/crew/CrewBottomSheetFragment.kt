@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.example.runningapp.databinding.BottomSheetCrewBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -17,7 +18,7 @@ class CrewBottomSheetFragment : BottomSheetDialogFragment() {
     private lateinit var itemTitle: String
     private lateinit var itemLocation: String
     private lateinit var itemContent: String
-    private var itemUserImage: Int = 0
+    private lateinit var itemUserImage: String
     private lateinit var itemUserName: String
     private lateinit var itemUserRank: String
 
@@ -36,7 +37,10 @@ class CrewBottomSheetFragment : BottomSheetDialogFragment() {
         binding.title.text = itemTitle
         binding.content.text = itemContent
         binding.location.text = itemLocation
-        binding.userImage.setImageResource(itemUserImage)
+        Glide.with(this)    // 여기는 이미지 지정
+            .load(itemUserImage)
+            .circleCrop()
+            .into(binding.userImage)  // BottomSheet의 이미지뷰 ID
         binding.userName.text = itemUserName
         binding.userRank.text = itemUserRank
 
@@ -73,7 +77,7 @@ class CrewBottomSheetFragment : BottomSheetDialogFragment() {
         title: String,
         location: String,
         content: String,
-        userImage: Int,
+        userImage: String,
         userName: String,
         userRank: String
     ) {
