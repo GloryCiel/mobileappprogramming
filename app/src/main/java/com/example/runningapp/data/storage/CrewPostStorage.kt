@@ -23,20 +23,22 @@ object CrewPostStorage : BaseStorage() {
         context: Context,
         title: String,
         content: String,
+        location: String,
         userId: Int,
         courseId: Int?,
         maxMembers: Int? = null,
-        courseImagePath: String? = null
+        imagePath: String? = null
     ): CrewPost {
         val posts = loadPosts(context).toMutableList()
         val newPost = CrewPost(
             id = getNextId(context, FILENAME),  // 자동으로 다음 ID 생성
             title = title,
             content = content,
+            location = location,
             userId = userId,
             courseId = courseId,
             maxMembers = maxMembers,
-            courseImagePath = courseImagePath ?: "file:///android_asset/defaultCourse.png"
+            imagePath = imagePath ?: "file:///android_asset/defaultPost.png"
         )
         posts.add(newPost)
         savePosts(context, posts)

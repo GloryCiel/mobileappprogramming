@@ -86,6 +86,7 @@ object TestDataInitializer {
                 context = context,
                 title = "test_crew$index",
                 content = "test_content$index",
+                location = if (index % 2 == 0) "수성구" else "중구",
                 userId = users[index % dummy_count].id,  // 1..4
                 courseId = courses[index % dummy_count].id,
                 maxMembers = (index % 4) + 2  // 2..5
